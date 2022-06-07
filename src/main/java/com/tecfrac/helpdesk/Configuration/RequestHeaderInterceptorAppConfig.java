@@ -1,6 +1,6 @@
-
 package com.tecfrac.helpdesk.Configuration;
 
+import com.tecfrac.helpdesk.Interceptor.CorsInterceptor;
 import com.tecfrac.helpdesk.Interceptor.RequestAuthenticationInterceptor;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,19 +14,18 @@ public class RequestHeaderInterceptorAppConfig extends WebMvcConfigurerAdapter {
 
     @Autowired
     RequestAuthenticationInterceptor requestHeaderInterceptor;
+    @Autowired
+    CorsInterceptor corsInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(corsInterceptor);
+
         registry.addInterceptor(requestHeaderInterceptor).excludePathPatterns("/auth/**")
                 .excludePathPatterns("/error")
                 .excludePathPatterns("/user/**");
         // registry.addInterceptor(requestHeaderInterceptor).excludePathPatterns("/user/addUser/**");
-
     }
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**");
-    }
 }
 //here this code is interceptor configuraton on the whole code with the exception of the login fucntion 

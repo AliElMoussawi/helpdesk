@@ -13,18 +13,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.lang.NonNullFields;
 
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
  *
  * @author CLICK ONCE
  */
-@CrossOrigin
 @Component
 public class RequestAuthenticationInterceptor implements HandlerInterceptor {
 
@@ -43,6 +40,10 @@ public class RequestAuthenticationInterceptor implements HandlerInterceptor {
         String httpToken = request.getHeader("token");//here i askeed for user to insert data in the header of the request you can checkthe postmon and you will get the \
         // result 
         String sessionId = request.getHeader("sessionId");// same as above
+        if (sessionId == null || httpToken == null
+                || sessionId.equals("null")) {
+            throw new HelpDeskException(HttpStatus.FORBIDDEN, "Invalid Credentails");
+        }
         System.out.println("session:" + sessionId);
         System.out.println("token:" + httpToken);
 
