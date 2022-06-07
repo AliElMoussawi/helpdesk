@@ -6,11 +6,9 @@ package com.tecfrac.helpdesk.controller;
 
 import com.tecfrac.helpdesk.bean.BeanSession;
 import com.tecfrac.helpdesk.model.ModelCompany;
-import com.tecfrac.helpdesk.model.ModelUser;
 import com.tecfrac.helpdesk.request.AddUser;
 import com.tecfrac.helpdesk.service.CompanyService;
 import java.util.List;
-import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
