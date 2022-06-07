@@ -134,7 +134,7 @@ public class TicketController {
         return new ResponseEntity<>(addTicket, HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.PATCH, value = "/EditTicket/{id}")
+    @RequestMapping(method = RequestMethod.PATCH, value = "/editTicket/{id}")
     public ResponseEntity<ModelTicket> EditTicket(@PathVariable Integer ticketId, @RequestBody RequestAddTicket ticket) throws Exception {
         ModelTicket addTicket = null;
         if (ticketId != null) {
