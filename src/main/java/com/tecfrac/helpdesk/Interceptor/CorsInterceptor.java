@@ -53,7 +53,7 @@ public class CorsInterceptor extends HandlerInterceptorAdapter {
         origin = request.getHeader(ORIGIN);
         response.setHeader(AC_ALLOW_ORIGIN, request.getHeader(ORIGIN));
         if (this.corsData.isPreflighted()) {
-            
+
             allowMethods = request.getHeader(AC_REQUEST_METHOD);
             response.setHeader(AC_ALLOW_METHODS, allowMethods);
             allowHeaders = request.getHeader(AC_REQUEST_HEADERS);
@@ -63,7 +63,7 @@ public class CorsInterceptor extends HandlerInterceptorAdapter {
             response.setStatus(200);
             response.setHeader(HEADER_CONNECTION, "keep-alive");
             return false;
-            
+
         }
         return true;
     }
