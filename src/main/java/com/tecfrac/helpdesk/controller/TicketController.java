@@ -138,7 +138,7 @@ public class TicketController {
     public ResponseEntity<ModelTicket> EditTicket(@PathVariable Integer ticketId, @RequestBody RequestAddTicket ticket) throws Exception {
         ModelTicket addTicket = null;
         if (ticketId != null) {
-            addTicket = ticketService.updateTicket((long) ticketId, ticket);
+            addTicket = ticketService.updateTicket(ticketId, ticket);
 
             return new ResponseEntity<>(addTicket, HttpStatus.OK);
         } else {

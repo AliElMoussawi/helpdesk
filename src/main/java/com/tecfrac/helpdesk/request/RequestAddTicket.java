@@ -1,7 +1,6 @@
 package com.tecfrac.helpdesk.request;
 
 import java.util.List;
-import java.util.Set;
 
 public class RequestAddTicket {
 

@@ -4,6 +4,7 @@
  */
 package com.tecfrac.helpdesk.service;
 
+import com.tecfrac.helpdesk.bean.BeanSession;
 import com.tecfrac.helpdesk.exception.HelpDeskException;
 import com.tecfrac.helpdesk.model.ModelSession;
 import com.tecfrac.helpdesk.model.ModelUser;
@@ -30,37 +31,39 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @Service
 public class AuthenticationService {
-
+    
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private UserPasswordRepository userpasswordRepository;
     @Autowired
     private SessionRepository sessionRepository;
-
+    @Autowired
+    private BeanSession beanSession;
+    
     public static class Pair<T, S> {
-
+        
         T first;
         S second;
-
+        
         public Pair(T first, S second) {
             this.first = first;
             this.second = second;
         }
-
+        
         public T getFirst() {
             return first;
         }
-
+        
         public S getSecond() {
             return second;
         }
-
+        
         public Pair() {
             throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
         }
     }
-
+    
     public ModelSession login(RequestLogin request) throws HelpDeskException {
         Pair<ModelUser, ModelUserPassword> login = checkPassword(request.getUsername(), request.getPassword());
         ModelSession session = new ModelSession();
@@ -69,9 +72,13 @@ public class AuthenticationService {
         session.setValid(true);
         session.setToken(UUID.randomUUID().toString());
         sessionRepository.save(session);
+        beanSession.setUser(login.first);
+        beanSession.setToken(session.getToken());
+        beanSession.setId(session.getId());
+        beanSession.setValid(true);
         return session;
     }
-
+    
     private Pair<ModelUser, ModelUserPassword> checkPassword(@RequestParam(required = true) String username, @RequestParam(required = true) String password) throws HelpDeskException {
         ModelUser userData = userRepository.findByUsername(username);
         ModelUserPassword passowrdModel = null;
@@ -91,9 +98,9 @@ public class AuthenticationService {
         Pair<ModelUser, ModelUserPassword> a = new Pair<>(userData, passowrdModel);
         return a;
     }
-
+    
     public ModelUser changePassword(@RequestParam(required = true) RequestChangePassword request) throws Exception {
-
+        
         if (request.getNewPassword() == null || request.getNewPassword().isBlank()) {
             throw new HelpDeskException(HttpStatus.BAD_REQUEST, "new password is empty!");
         }
@@ -108,12 +115,14 @@ public class AuthenticationService {
         password.setUserId(login.first.getId());
         password.setValid(true);
         userpasswordRepository.save(password);
-
+        
         return login.first;
     }
+    
     public static void main(String[] args) {
         System.out.print(HashingUtil.hashString("test1"));
     }
+    
     public ModelSession signOut(int sessionId) throws HelpDeskException {
         Optional<ModelSession> session = sessionRepository.findById(sessionId);
         if (session.isEmpty()) {
@@ -122,6 +131,8 @@ public class AuthenticationService {
         session.get().setDateExpired(new Date());
         session.get().setValid(false);
         sessionRepository.save(session.get());
+        beanSession.setValid(Boolean.FALSE);
+        beanSession.setDateExpired(new Date());
         return session.get();
     }
 }

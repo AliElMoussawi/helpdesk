@@ -4,15 +4,15 @@
  */
 package com.tecfrac.helpdesk.repository;
 
-
 import com.tecfrac.helpdesk.model.ModelUser;
-import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserRepository extends JpaRepository<ModelUser,Integer>{
+public interface UserRepository extends JpaRepository<ModelUser, Integer> {
+
     ModelUser findByUsername(String username);
+
     ModelUser findById(long id);
 
     public Object findByEmail(String email);

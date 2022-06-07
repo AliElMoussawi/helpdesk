@@ -7,6 +7,7 @@ package com.tecfrac.helpdesk.repository;
 import com.tecfrac.helpdesk.model.ModelTicket;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TicketRepository extends JpaRepository<ModelTicket, Integer> {
 
-    ModelTicket findById(long ticketId);
+    Optional<ModelTicket> findById(Integer ticketId);
 
     public void deleteById(Long ticketId);
 

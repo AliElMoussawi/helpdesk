@@ -98,30 +98,27 @@ public class TicketService {
 
         ModelUser requester;
         if (request.getRequesterId() != null) {
-            requester = userRepository.findById((int) request.getRequesterId());
+            requester = userRepository.findById(request.getRequesterId()).get();
         } else {
             requester = beanSession.getUser();
         }
         ticket.setRequester(requester);
-//        if (status != null) {
-//            ticket.setStatus(status);
-//        }
-        // ticket.setStatus(ticketStatusRepository.findById(2));
+        if (status != null) {
+            ticket.setStatus(status);
+        } else {
+            ticket.setStatus(ticketStatusRepository.findById(ModelTicketStatus.Open));
+        }
         //  ticket.setValid(request.getValid() == null ? true : request.getValid());
-        ModelGroup group = null;
+        ModelGroup group = ticket.getAssignedGroup();
         if (request.getAssignedGroupId() != null) {
             group = groupRepository.findById((int) request.getAssignedGroupId());
-        } else {
-            group = ticket.getAssignedGroup();
         }
         ticket.setAssignedGroup(group);
         ModelUser assignee = beanSession.getUser();
         if (request.getAssignedUserId() != null) {
-            assignee = userRepository.findById((int) request.getAssignedUserId());
-
+            assignee = userRepository.findById(request.getAssignedUserId()).get();
         }
         ticket.setAssignedUser(assignee);
-
         if (request.getTags() != null && !request.getTags().isEmpty()) {
             tags = tag(request.getTags(), ticket);
             //  ticket.setModelTags(tags);
@@ -147,8 +144,8 @@ public class TicketService {
     }
     // update
 
-    public ModelTicket updateTicket(Long ticketId, RequestAddTicket newInfo) throws HelpDeskException {
-        ModelTicket ticket = ticketRepository.findById(ticketId);
+    public ModelTicket updateTicket(Integer ticketId, RequestAddTicket newInfo) throws HelpDeskException {
+        ModelTicket ticket = ticketRepository.findById(ticketId).get();
         return addOrEditTicket(ticket, newInfo);
     }
 
@@ -158,7 +155,7 @@ public class TicketService {
             if (tagRepository.findByTag(Tag) == null) {
                 ModelTag tag = new ModelTag();
                 tag.setTag(Tag);
-                tag.setId(ticket.getId());
+                tag.setTicketId(ticket.getId());
                 tagRepository.save(tag);
                 modelTags.add(tag);
             }
@@ -166,8 +163,8 @@ public class TicketService {
         return modelTags;
     }
 
-    public ModelTicket getTicket(Long ticketId) {
-        return ticketRepository.findById(ticketId);
+    public ModelTicket getTicket(Integer ticketId) {
+        return ticketRepository.findById(ticketId).get();
     }
 
     public List<ModelTicket> allTickets() {

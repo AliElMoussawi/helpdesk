@@ -5,6 +5,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -20,8 +23,8 @@ public class ModelTag {
     private Integer id;
 
     @Column
-    private int ticketId;
-    
+    private Integer ticketId;
+
     @Column
     private String tag;
 
@@ -33,11 +36,11 @@ public class ModelTag {
         this.id = id;
     }
 
-    public int getTicketId() {
+    public Integer getTicketId() {
         return ticketId;
     }
 
-    public void setTicketId(int ticketId) {
+    public void setTicketId(Integer ticketId) {
         this.ticketId = ticketId;
     }
 

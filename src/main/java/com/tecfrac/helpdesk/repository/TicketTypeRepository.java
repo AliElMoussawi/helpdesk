@@ -12,5 +12,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TicketTypeRepository extends JpaRepository<ModelTicketType, Integer> {
 
-    ModelTicketType findById(long id);
+    /**
+     *
+     * @param id
+     * @return
+     */
+    ModelTicketType findById(int id);
 }
