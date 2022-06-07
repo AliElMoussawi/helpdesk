@@ -39,10 +39,13 @@ public class RequestAuthenticationInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         //HttpServletRequest httpRequest = (HttpServletRequest) request;
         System.out.println("com.tecfrac.helpdesk.Interceptor.RequestHeaderInterceptor.preHandle() " + request.getRequestURI());
-
+        System.out.println(request.getHeaderNames());
         String httpToken = request.getHeader("token");//here i askeed for user to insert data in the header of the request you can checkthe postmon and you will get the \
         // result 
         String sessionId = request.getHeader("sessionId");// same as above
+        System.out.println("session:" + sessionId);
+        System.out.println("token:" + httpToken);
+
         Optional<ModelSession> session = sessionRepository.findById(Integer.parseInt(sessionId));//here i'm looking if there is id of a session in the table 
         System.out.println("" + sessionId + "," + Integer.parseInt(sessionId) + "if " + session.isPresent());
 

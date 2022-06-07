@@ -115,6 +115,7 @@ public class TicketService {
         }
         ticket.setAssignedGroup(group);
         ModelUser assignee = beanSession.getUser();
+        System.out.println("assignee: " + assignee.getUsername());
         if (request.getAssignedUserId() != null) {
             assignee = userRepository.findById(request.getAssignedUserId()).get();
         }
@@ -123,8 +124,10 @@ public class TicketService {
             tags = tag(request.getTags(), ticket);
             //  ticket.setModelTags(tags);
         }
+        ModelTicketMessage message = null;
         if (request.getMessage() != null) {
-            ModelTicketMessage message = new ModelTicketMessage();
+            System.out.println("message : " + request.getMessage());
+            message = new ModelTicketMessage();
             message.setDateCreation(new Date());
             message.setMessage(request.getMessage());
             message.setUser(beanSession.getUser());
@@ -135,8 +138,8 @@ public class TicketService {
                 message.setInTernal(request.getInternal());
             } else {
                 message.setInTernal(Boolean.FALSE);
-
             }
+
             messageRepository.save(message);
         }
         ticketRepository.save(ticket);

@@ -1,6 +1,7 @@
 package com.tecfrac.helpdesk.model;
 
 import java.util.Date;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -25,7 +26,7 @@ public class ModelTicketMessage {
     @JoinColumn
     private ModelUser user;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.ALL})
     @JoinColumn
     private ModelTicket ticket;
 
