@@ -56,4 +56,6 @@ public class UserService {
     public List<ModelUser> allUsers() {
         return userRepository.findAll();
     }
+
+  
 }

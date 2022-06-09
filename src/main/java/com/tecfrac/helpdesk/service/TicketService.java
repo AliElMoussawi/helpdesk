@@ -4,7 +4,6 @@
  */
 package com.tecfrac.helpdesk.service;
 
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.tecfrac.helpdesk.repository.TicketPriorityRepository;
 import com.tecfrac.helpdesk.bean.BeanSession;
 import com.tecfrac.helpdesk.exception.HelpDeskException;
@@ -25,14 +24,16 @@ import com.tecfrac.helpdesk.repository.TicketStatusRepository;
 import com.tecfrac.helpdesk.repository.TicketTypeRepository;
 import com.tecfrac.helpdesk.repository.UserRepository;
 import com.tecfrac.helpdesk.request.RequestAddTicket;
+import com.tecfrac.helpdesk.request.RequestMessageTicket;
 import com.tecfrac.helpdesk.service.AuthenticationService.Pair;
-
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -43,8 +44,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Service
 public class TicketService {
 
+    private JavaMailSender javaMailSender;
     @Autowired
     private MessageRepository messageRepository;
+    @Autowired
+    EmailService emailService;
 
     @Autowired
     private BeanSession beanSession;
@@ -139,7 +143,11 @@ public class TicketService {
             } else {
                 message.setInTernal(Boolean.FALSE);
             }
-
+            RequestMessageTicket requestMessageTicket = new RequestMessageTicket();
+            requestMessageTicket.setMessage(request.getMessage());
+            requestMessageTicket.setRequesterId(ticket.getRequester().getId());
+            requestMessageTicket.setSubject(ticket.getSubject());
+            emailService.sendMail(requestMessageTicket);
             messageRepository.save(message);
         }
         ticketRepository.save(ticket);
@@ -253,4 +261,5 @@ public class TicketService {
     public List<ModelTicket> suspendedTickets() {
         return ticketRepository.findAllByStatusId(ModelTicketStatus.Suspended);
     }
+
 }

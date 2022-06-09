@@ -29,7 +29,7 @@ public class CompanyController {
     @Autowired
     CompanyService companyService;
 
-    @RequestMapping(method = RequestMethod.POST, value = "/addCompany")
+    @RequestMapping(method = RequestMethod.POST, value = "/")
     public ResponseEntity<ModelCompany> createCompany(@RequestBody AddUser request) throws Exception {
         ModelCompany newCompany = companyService.addCompany(request.getEmail(), request.getUsername());
         if (newCompany == null) {
@@ -39,7 +39,7 @@ public class CompanyController {
         return new ResponseEntity<>(newCompany, HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/allCompanies")
+    @RequestMapping(method = RequestMethod.GET, value = "/")
     public ResponseEntity<List<ModelCompany>> allCompanies() throws Exception {
         List<ModelCompany> allCompanies = companyService.findAll();
         return new ResponseEntity<>(allCompanies, HttpStatus.OK);

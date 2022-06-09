@@ -68,6 +68,16 @@ public class ModelTicket {
     @JoinColumn
     @ManyToOne
     public ModelUser deletedBy;
+    @Column
+    private String note;
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
 
     public ModelUser getDeletedBy() {
         return deletedBy;
