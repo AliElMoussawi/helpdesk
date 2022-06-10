@@ -1,13 +1,13 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.tecfrac.helpdesk.service;
 
 import com.tecfrac.helpdesk.bean.BeanSession;
+import com.tecfrac.helpdesk.model.ModelGroup;
 import com.tecfrac.helpdesk.model.ModelUser;
+import com.tecfrac.helpdesk.model.ModelUserGroup;
 import com.tecfrac.helpdesk.model.ModelUserType;
 import com.tecfrac.helpdesk.repository.CompanyRepository;
+import com.tecfrac.helpdesk.repository.GroupRepository;
+import com.tecfrac.helpdesk.repository.UserGroupRepository;
 import com.tecfrac.helpdesk.repository.UserRepository;
 import com.tecfrac.helpdesk.repository.UserTypeRepository;
 import com.tecfrac.helpdesk.request.AddUser;
@@ -16,10 +16,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-/**
- *
- * @author CLICK ONCE
- */
 @Service
 public class UserService {
 
@@ -28,9 +24,15 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
+    private UserGroupRepository userGroupRepository;
+    @Autowired
+    private GroupRepository groupRepository;
+    @Autowired
     private UserTypeRepository userTypeRepository;
     @Autowired
     private CompanyRepository companyRepository;
+    @Autowired
+    private AuthenticationService authenticationService;
 
     public ModelUser addUser(AddUser userInfo) {
         boolean exist1 = userRepository.findByEmail(userInfo.getEmail()) == null;
@@ -47,6 +49,11 @@ public class UserService {
             }
             userRepository.save(user);
 
+            authenticationService.forgetPassword(user.getEmail());
+            ModelUserGroup userGr = new ModelUserGroup();
+            userGr.setGroup(groupRepository.findById(ModelGroup.Default));
+            userGr.setUser(user);
+            userGroupRepository.save(userGr);
             return user;
         } else {
             return null;
@@ -57,5 +64,4 @@ public class UserService {
         return userRepository.findAll();
     }
 
-  
 }

@@ -5,14 +5,15 @@
 package com.tecfrac.helpdesk.repository;
 
 import com.tecfrac.helpdesk.model.ModelCompany;
+import com.tecfrac.helpdesk.model.ModelGroup;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CompanyRepository extends JpaRepository<ModelCompany, Integer> {
-
+    
     public String findByEmail(String companyEmail);
 
-    public String findByUsername(String companyUsername);
+    public ModelCompany findByUsername(String companyUsername);
 
 }

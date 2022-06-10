@@ -21,6 +21,7 @@ public class ModelUser {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
+    
     @JoinColumn
     @OneToOne
     private ModelUserType userType;

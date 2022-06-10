@@ -5,12 +5,17 @@
 package com.tecfrac.helpdesk.repository;
 
 import com.tecfrac.helpdesk.model.ModelGroup;
-import com.tecfrac.helpdesk.model.ModelUser;
-import java.util.Optional;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface GroupRepository extends JpaRepository<ModelGroup,Integer>{
-  ModelGroup  findById(long id);
+public interface GroupRepository extends JpaRepository<ModelGroup, Integer> {
+
+    @Override
+    List<ModelGroup> findAll();
+
+    ModelGroup findById(long id);
+
+    ModelGroup findByName(String groupName);
 }

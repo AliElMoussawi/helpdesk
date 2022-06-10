@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -83,8 +82,10 @@ public class TicketService {
                 Optional<ModelTicketType> ticketType = ticketTypeRepository.findById(request.getTypeId());
                 ticket.setTicketType(ticketType.get());
             }
+            System.out.println("priority:" + request.getPriortiyId());
             if (request.getPriortiyId() != null) {
-                Optional<ModelTicketPriority> ticketPriority = ticketPriorityRepository.findById(request.getTypeId());
+                Optional<ModelTicketPriority> ticketPriority = ticketPriorityRepository.findById(request.getPriortiyId());
+
                 ticket.setPriority(ticketPriority.get());
             }
             if (request.getStatusId() != null) {
@@ -147,7 +148,7 @@ public class TicketService {
             requestMessageTicket.setMessage(request.getMessage());
             requestMessageTicket.setRequesterId(ticket.getRequester().getId());
             requestMessageTicket.setSubject(ticket.getSubject());
-            emailService.sendMail(requestMessageTicket);
+//            emailService.sendMail(requestMessageTicket);
             messageRepository.save(message);
         }
         ticketRepository.save(ticket);
@@ -220,7 +221,10 @@ public class TicketService {
         return ticketRepository.findAllByStatusId(0);
     }
 
-    // delete
+    public ModelTicket deletedTicketsForever(Integer Id) {
+        return ticketRepository.deleteById((int)Id).get();
+    }
+
     public ModelTicket deleteTicket(Integer ticketId) {
         Optional<ModelTicket> ticket = ticketRepository.findById(ticketId);
         ticket.get().setStatus(ticketStatusRepository.findById(0));

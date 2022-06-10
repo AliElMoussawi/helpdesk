@@ -7,14 +7,14 @@ package com.tecfrac.helpdesk.controller;
 import com.tecfrac.helpdesk.bean.BeanSession;
 import com.tecfrac.helpdesk.model.ModelSession;
 import com.tecfrac.helpdesk.model.ModelUser;
-import com.tecfrac.helpdesk.model.ModelUserPassword;
+
 import com.tecfrac.helpdesk.repository.UserRepository;
 import com.tecfrac.helpdesk.request.RequestChangePassword;
 import com.tecfrac.helpdesk.request.RequestLogin;
-import com.tecfrac.helpdesk.request.RequestMessageTicket;
+
 import com.tecfrac.helpdesk.service.AuthenticationService;
 import com.tecfrac.helpdesk.service.EmailService;
-import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @CrossOrigin
 @Controller
@@ -44,8 +43,6 @@ public class AuthenticationController {
 
     @Autowired
     BeanSession beanSession;
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @RequestMapping(method = RequestMethod.POST, value = "/login")
     public ResponseEntity<ModelSession> login(@RequestBody RequestLogin request) throws Exception {

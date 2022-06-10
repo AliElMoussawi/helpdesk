@@ -1,6 +1,6 @@
 package com.tecfrac.helpdesk.model;
 
-import javax.persistence.Column;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -17,15 +17,20 @@ import javax.persistence.Table;
 @Table(name = "user_group")
 public class ModelUserGroup {
 
+    /**
+     *
+     */
+    public static final int Default = 1;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(unique = true)
+    @JoinColumn
+    @JsonIgnore
     private ModelGroup group;
     @ManyToOne
-    @JoinColumn(unique = true)
+    @JoinColumn
     private ModelUser user;
 
     public Integer getId() {

@@ -5,24 +5,15 @@ import java.util.List;
 public class RequestAddTicket {
 
     private String subject;
-
     private Integer statusId;
-
     private Integer requesterId;
-
     private Integer assignedUserId;
-
     private Integer assignedGroupId;
-
     private Integer priorityId;
-
     private Integer typeId;
     private List<String> tags;
-
     private String message;
-
     private Boolean valid;
-
     private Boolean internal;
 
     public String getSubject() {

@@ -21,7 +21,8 @@ public interface TicketRepository extends JpaRepository<ModelTicket, Integer> {
 
     Optional<ModelTicket> findById(Integer ticketId);
 
-    public void deleteById(Long ticketId);
+    
+    Optional<ModelTicket> deleteById(int ticketId);
 
     public Set<ModelTicket> findAllByValid(boolean b);
 

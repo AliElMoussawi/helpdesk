@@ -150,7 +150,7 @@ public class AuthenticationService {
             RequestMessageTicket resetEmail = new RequestMessageTicket();
             String appUrl = "http://192.168.3.25:8080/auth/resetPassword";
             resetEmail.setMessage("To reset your password, click the link below:\n" + appUrl);
-            resetEmail.setSubject("Password Reset Request");
+            resetEmail.setSubject("RESET PASSWORD");
             resetEmail.setRequesterId(user.getId());
             return emailService.sendMail(resetEmail);
         }

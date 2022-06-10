@@ -33,7 +33,7 @@ public class CorsInterceptor extends HandlerInterceptorAdapter {
 
     private String origin;
     private String allowHeaders;
-    private String allowMethods = "POST, GET, OPTIONS, DELETE, PUT, PATCH";
+    private String allowMethods = "POST, GET, OPTIONS, DELETE, PUT,PATCH";
 
     public void setOrigin(String origin) {
         this.origin = origin;
