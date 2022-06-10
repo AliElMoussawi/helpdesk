@@ -7,6 +7,8 @@ package com.tecfrac.helpdesk.service;
 import com.tecfrac.helpdesk.bean.BeanSession;
 import com.tecfrac.helpdesk.model.ModelCompany;
 import com.tecfrac.helpdesk.model.ModelGroup;
+import com.tecfrac.helpdesk.model.ModelUser;
+import com.tecfrac.helpdesk.model.ModelUserGroup;
 import com.tecfrac.helpdesk.repository.CompanyRepository;
 import com.tecfrac.helpdesk.repository.GroupRepository;
 import com.tecfrac.helpdesk.repository.UserGroupRepository;
@@ -24,6 +26,10 @@ public class GroupService {
     private CompanyRepository companyRepository;
     @Autowired
     private GroupRepository groupRepository;
+    @Autowired
+    private UserGroupRepository userGroupRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     public ModelGroup addGroup(Integer companyId, String groupName) {
         ModelGroup groupExist = groupRepository.findByName(groupName);
@@ -41,4 +47,18 @@ public class GroupService {
     public List<ModelGroup> findAll() {
         return groupRepository.findAll();
     }
+
+    public ModelUserGroup addUserGroup(Integer groupId, Integer userId) {
+        ModelGroup groupExist = groupRepository.findById(groupId).get();
+        ModelUser userExist = userRepository.findById(userId).get();
+        if (groupExist != null && userExist != null) {
+            ModelUserGroup addUserToGroup = new ModelUserGroup();
+            addUserToGroup.setUser(userExist);
+            addUserToGroup.setGroup(groupExist);
+            userGroupRepository.save(addUserToGroup);
+            return addUserToGroup;
+        }
+        return null;
+    }
+
 }

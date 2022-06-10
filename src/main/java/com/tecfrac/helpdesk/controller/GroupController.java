@@ -7,8 +7,11 @@ package com.tecfrac.helpdesk.controller;
 import com.tecfrac.helpdesk.bean.BeanSession;
 import com.tecfrac.helpdesk.model.ModelCompany;
 import com.tecfrac.helpdesk.model.ModelGroup;
+import com.tecfrac.helpdesk.model.ModelUserGroup;
 import com.tecfrac.helpdesk.model.ModelUserType;
+import com.tecfrac.helpdesk.repository.UserRepository;
 import com.tecfrac.helpdesk.request.AddUser;
+import com.tecfrac.helpdesk.request.AddUserToGroup;
 import com.tecfrac.helpdesk.service.CompanyService;
 import com.tecfrac.helpdesk.service.GroupService;
 import java.util.List;
@@ -31,7 +34,8 @@ public class GroupController {
     BeanSession beanSession;
     @Autowired
     GroupService groupService;
-
+    @Autowired
+    UserRepository userRepository;
     @RequestMapping(method = RequestMethod.POST, value = "")
     public ResponseEntity<ModelGroup> createGroup(@RequestBody AddUser request) throws Exception {
         ModelGroup newGroup = null;
@@ -49,5 +53,18 @@ public class GroupController {
     public ResponseEntity<List<ModelGroup>> allgroups() throws Exception {
         List<ModelGroup> allgroups = groupService.findAll();
         return new ResponseEntity<>(allgroups, HttpStatus.OK);
+    }
+     @RequestMapping(method = RequestMethod.POST, value = "/AddUserToGroup")
+    public ResponseEntity<ModelUserGroup> addUserGroup(@RequestBody AddUserToGroup request) throws Exception {
+        Boolean isStaff = userRepository.findById(request.getUserId()).get().getUserType().getId() != ModelUserType.NewUser;
+        ModelUserGroup addedUser = null;
+        if (beanSession.getUser().getUserType().getId() == ModelUserType.Administrator && isStaff) {
+            addedUser = groupService.addUserGroup(request.getUserId(), request.getCompanyId());
+            if (addedUser != null) {
+                return new ResponseEntity<>(addedUser, HttpStatus.OK);
+            }
+
+        }
+        return new ResponseEntity<>(addedUser, HttpStatus.BAD_REQUEST);
     }
 }
