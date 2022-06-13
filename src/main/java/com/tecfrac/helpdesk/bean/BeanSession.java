@@ -2,6 +2,7 @@ package com.tecfrac.helpdesk.bean;
 
 import com.tecfrac.helpdesk.model.*;
 import java.util.Date;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import org.springframework.web.context.WebApplicationContext;
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class BeanSession {
 
+    // @Value("${id}")
     private Integer id;
 
     private ModelUser user;

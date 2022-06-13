@@ -135,7 +135,7 @@ public class TicketController {
     }
 
     @RequestMapping(method = RequestMethod.PATCH, value = "/editTicket/{id}")
-    public ResponseEntity<ModelTicket> EditTicket(@PathVariable("id")String id, @RequestBody RequestAddTicket ticket) throws Exception {
+    public ResponseEntity<ModelTicket> EditTicket(@PathVariable("id") String id, @RequestBody RequestAddTicket ticket) throws Exception {
         ModelTicket addTicket = null;
         if (!id.equals("null")) {
             addTicket = ticketService.updateTicket(Integer.parseInt(id), ticket);
@@ -152,11 +152,12 @@ public class TicketController {
         List<ModelTicket> alltickets = ticketService.allTicketsByStatusId(status);
         return new ResponseEntity<>(alltickets, HttpStatus.OK);
     }
+
     @RequestMapping(method = RequestMethod.DELETE, value = "/deleteTicketsForever")
-    public ResponseEntity<List<ModelTicket>> deleteTicketsForever(@RequestBody RequestDeleteTickets tickets) throws Exception {
-        List<ModelTicket> DeletedTickets = new ArrayList<ModelTicket>();
+    public ResponseEntity<List<String>> deleteTicketsForever(@RequestBody RequestDeleteTickets tickets) throws Exception {
+        List<String> DeletedTickets = new ArrayList<String>();
         for (Integer ticketId : tickets.getTicketsIds()) {
-            ModelTicket DELETED = ticketService.deletedTicketsForever(ticketId);
+            String DELETED = ticketService.deletedTicketsForever(ticketId);
             DeletedTickets.add(DELETED);
         }
         return new ResponseEntity<>(DeletedTickets, HttpStatus.OK);

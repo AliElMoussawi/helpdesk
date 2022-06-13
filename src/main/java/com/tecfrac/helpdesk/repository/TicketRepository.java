@@ -5,9 +5,12 @@
 package com.tecfrac.helpdesk.repository;
 
 import com.tecfrac.helpdesk.model.ModelTicket;
+import com.tecfrac.helpdesk.model.ModelTicketStatus;
+import com.tecfrac.helpdesk.model.ModelUser;
+import com.tecfrac.helpdesk.service.TicketService;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -19,11 +22,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TicketRepository extends JpaRepository<ModelTicket, Integer> {
 
-    Optional<ModelTicket> findById(Integer ticketId);
-
-    
-    Optional<ModelTicket> deleteById(int ticketId);
-
     public Set<ModelTicket> findAllByValid(boolean b);
 
     public List<ModelTicket> findAllByAssignedUserIdAndStatusIdNot(Object userId, int Solved);
@@ -32,7 +30,7 @@ public interface TicketRepository extends JpaRepository<ModelTicket, Integer> {
 
     public List<ModelTicket> findAllByAssignedGroupIdAndStatusIdNot(int gourpId, int Solved);
 
-    public List<ModelTicket> findAllByStatusId(int statusId);
+    public List<ModelTicket> findAllByStatusId(Integer statusId);
 
     public List<ModelTicket> findAllByUpdatedNot(Date date);
 
@@ -45,4 +43,7 @@ public interface TicketRepository extends JpaRepository<ModelTicket, Integer> {
     public List<ModelTicket> findAllByAssignedUserIdNullAndStatusIdOrStatusIdNot(int Solved, int Closed);
 
     public List<ModelTicket> findAllByAssignedUserIdAndStatusIdOrStatusIdNot(Integer userId, int Solved, int Closed);
+
+    public List<ModelTicket> findAllByStatusIdAndAssignedGroupId(int i, ModelUser user);
+
 }

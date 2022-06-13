@@ -148,13 +148,11 @@ public class TicketService {
             requestMessageTicket.setMessage(request.getMessage());
             requestMessageTicket.setRequesterId(ticket.getRequester().getId());
             requestMessageTicket.setSubject(ticket.getSubject());
-//            emailService.sendMail(requestMessageTicket);
             messageRepository.save(message);
         }
         ticketRepository.save(ticket);
         return ticket;
     }
-    // update
 
     public ModelTicket updateTicket(Integer ticketId, RequestAddTicket newInfo) throws HelpDeskException {
         ModelTicket ticket = ticketRepository.findById(ticketId).get();
@@ -221,8 +219,9 @@ public class TicketService {
         return ticketRepository.findAllByStatusId(0);
     }
 
-    public ModelTicket deletedTicketsForever(Integer Id) {
-        return ticketRepository.deleteById((int)Id).get();
+    public String deletedTicketsForever(Integer id) {
+        ticketRepository.deleteById(id);
+        return id + "";
     }
 
     public ModelTicket deleteTicket(Integer ticketId) {
@@ -264,6 +263,10 @@ public class TicketService {
 
     public List<ModelTicket> suspendedTickets() {
         return ticketRepository.findAllByStatusId(ModelTicketStatus.Suspended);
+    }
+
+    public List<ModelTicket> groupDeletedTickets() {
+        return ticketRepository.findAllByStatusIdAndAssignedGroupId(0, beanSession.getUser());
     }
 
 }

@@ -9,23 +9,18 @@ import com.tecfrac.helpdesk.exception.HelpDeskException;
 import com.tecfrac.helpdesk.model.ModelSession;
 import com.tecfrac.helpdesk.model.ModelUser;
 import com.tecfrac.helpdesk.model.ModelUserPassword;
-import com.tecfrac.helpdesk.model.ModelUserType;
 import com.tecfrac.helpdesk.repository.SessionRepository;
 import com.tecfrac.helpdesk.repository.UserPasswordRepository;
 import com.tecfrac.helpdesk.request.RequestLogin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.tecfrac.helpdesk.repository.UserRepository;
-import com.tecfrac.helpdesk.request.AddUser;
 import com.tecfrac.helpdesk.request.RequestChangePassword;
 import com.tecfrac.helpdesk.request.RequestMessageTicket;
 import com.tecfrac.helpdesk.util.HashingUtil;
 import java.util.Date;
 import java.util.Optional;
-
 import java.util.UUID;
-import static jdk.internal.joptsimple.internal.Messages.message;
-import jdk.internal.net.http.common.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -80,8 +75,10 @@ public class AuthenticationService {
         session.setToken(UUID.randomUUID().toString());
         sessionRepository.save(session);
         beanSession.setUser(login.first);
+        System.out.println("session id after login:" + session.getId());
         beanSession.setToken(session.getToken());
         beanSession.setId(session.getId());
+        System.out.println("session id after set bean " + beanSession.getId());
         beanSession.setValid(true);
         return session;
     }

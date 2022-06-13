@@ -4,6 +4,7 @@
  */
 package com.tecfrac.helpdesk.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Date;
 
 import java.util.Optional;
@@ -70,6 +71,10 @@ public class ModelTicket {
     public ModelUser deletedBy;
     @Column
     private String note;
+//    @ManyToOne
+//    @JoinColumn
+//    @JsonIgnore
+//    private ModelTicket ticket;
 
     public String getNote() {
         return note;

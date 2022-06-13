@@ -17,5 +17,6 @@ public interface TicketTypeRepository extends JpaRepository<ModelTicketType, Int
      * @param id
      * @return
      */
+    
     ModelTicketType findById(int id);
 }

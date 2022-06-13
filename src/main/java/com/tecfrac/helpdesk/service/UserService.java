@@ -64,4 +64,8 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    public List<ModelUser> allAgentsUsers() {
+        return userRepository.findAllByUserTypeId(2, 4);
+    }
+
 }

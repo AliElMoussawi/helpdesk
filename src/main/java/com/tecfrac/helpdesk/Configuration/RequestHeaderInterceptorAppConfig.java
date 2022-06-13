@@ -21,7 +21,7 @@ public class RequestHeaderInterceptorAppConfig extends WebMvcConfigurerAdapter {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(corsInterceptor);
 
-        registry.addInterceptor(requestHeaderInterceptor).excludePathPatterns("/auth/**")
+        registry.addInterceptor(requestHeaderInterceptor).excludePathPatterns("/auth/login")
                 .excludePathPatterns("/error")
                 .excludePathPatterns("/user/**");
         // registry.addInterceptor(requestHeaderInterceptor).excludePathPatterns("/user/addUser/**");

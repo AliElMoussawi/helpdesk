@@ -29,6 +29,7 @@ public class ModelUserGroup {
     @JoinColumn
     @JsonIgnore
     private ModelGroup group;
+
     @ManyToOne
     @JoinColumn
     private ModelUser user;
