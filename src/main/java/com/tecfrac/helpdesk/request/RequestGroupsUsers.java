@@ -7,13 +7,13 @@ public class RequestGroupsUsers {
 
     private String name;
     private Integer id;
-    private List<PairUG<String, Integer>> user;
+    private List<PairUG<String, Integer, String>> user;
 
-    public List<PairUG<String, Integer>> getUser() {
+    public List<PairUG<String, Integer, String>> getUser() {
         return user;
     }
 
-    public void setUser(List<PairUG<String, Integer>> user) {
+    public void setUser(List<PairUG<String, Integer, String>> user) {
         this.user = user;
     }
 

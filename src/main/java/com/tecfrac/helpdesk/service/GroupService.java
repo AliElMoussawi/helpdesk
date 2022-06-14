@@ -45,7 +45,6 @@ public class GroupService {
         }
         return null;
     }
-//public List<ModelGroup> findAll() {return groupRepository.findAll();}
 
     public List<RequestGroupsUsers> findAll() {
         List<RequestGroupsUsers> object = new ArrayList<RequestGroupsUsers>();
@@ -54,10 +53,10 @@ public class GroupService {
             RequestGroupsUsers e = new RequestGroupsUsers();
             e.setName(modelGroup.getName());
             e.setId(modelGroup.getId());
-            List<PairUG<String, Integer>> groupusers = new ArrayList<PairUG<String, Integer>>();
+            List<PairUG<String, Integer, String>> groupusers = new ArrayList<PairUG<String, Integer, String>>();
             System.out.println(modelGroup.getUser().size());
             for (ModelUserGroup modelUserGroup : modelGroup.getUser()) {
-                PairUG<String, Integer> user = new PairUG(modelUserGroup.getUser().getUsername(), modelUserGroup.getUser().getId());
+                PairUG<String, Integer, String> user = new PairUG(modelUserGroup.getUser().getUsername(), modelUserGroup.getUser().getId(),modelUserGroup.getUser().getEmail());
                 groupusers.add(user);
             }
             e.setUser(groupusers);
@@ -79,18 +78,28 @@ public class GroupService {
         return null;
     }
 
-    public static class PairUG<T, S> {
+    public static class PairUG<T, S, D> {
 
         T userName;
         S id;
+        D email;
 
-        public PairUG(T userName, S id) {
+        public PairUG(T userName, S id, D email) {
             this.userName = userName;
             this.id = id;
+            this.email = email;
         }
 
         public T getUserName() {
             return userName;
+        }
+
+        public D getEmail() {
+            return email;
+        }
+
+        public void setEmail(D email) {
+            this.email = email;
         }
 
         public S getId() {
