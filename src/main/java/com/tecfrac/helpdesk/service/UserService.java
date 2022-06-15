@@ -11,7 +11,7 @@ import com.tecfrac.helpdesk.repository.UserGroupRepository;
 import com.tecfrac.helpdesk.repository.UserRepository;
 import com.tecfrac.helpdesk.repository.UserTypeRepository;
 import com.tecfrac.helpdesk.request.AddUser;
-import com.tecfrac.helpdesk.service.GroupService.PairUG;
+import com.tecfrac.helpdesk.service.GroupService.PairUserInfo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -62,22 +62,21 @@ public class UserService {
         }
     }
 
-    public List<PairUG<String, Integer, String>> allUsers() {
+    public List<PairUserInfo<String, Integer, String>> allUsers() {
         List<ModelUser> modelUser = userRepository.findAll();
-        // = userRepository.findAllByUserTypeIdOrUserTypeId(2, 4);
-        List<PairUG<String, Integer, String>> allUsers = new ArrayList<PairUG<String, Integer, String>>();
+        List<PairUserInfo<String, Integer, String>> allUsers = new ArrayList<PairUserInfo<String, Integer, String>>();
         for (ModelUser user : modelUser) {
-            PairUG<String, Integer, String> modeluser = new PairUG(user.getUsername(), user.getId(), user.getEmail());
+            PairUserInfo<String, Integer, String> modeluser = new PairUserInfo(user.getUsername(), user.getId(), user.getEmail());
             allUsers.add(modeluser);
         }
         return allUsers;
     }
 
-    public List<PairUG<String, Integer, String>> allAgents() {
+    public List<PairUserInfo<String, Integer, String>> allAgents() {
         List<ModelUser> modelUser = userRepository.findAllByUserTypeIdOrUserTypeId(2, 4);
-        List<PairUG<String, Integer, String>> agents = new ArrayList<PairUG<String, Integer, String>>();
+        List<PairUserInfo<String, Integer, String>> agents = new ArrayList<PairUserInfo<String, Integer, String>>();
         for (ModelUser user : modelUser) {
-            PairUG<String, Integer, String> modeluser = new PairUG(user.getUsername(), user.getId(), user.getEmail());
+            PairUserInfo<String, Integer, String> modeluser = new PairUserInfo(user.getUsername(), user.getId(), user.getEmail());
             agents.add(modeluser);
         }
         return agents;

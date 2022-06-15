@@ -5,7 +5,6 @@ import com.tecfrac.helpdesk.Interceptor.RequestAuthenticationInterceptor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
@@ -23,7 +22,7 @@ public class RequestHeaderInterceptorAppConfig extends WebMvcConfigurerAdapter {
 
         registry.addInterceptor(requestHeaderInterceptor).excludePathPatterns("/auth/login")
                 .excludePathPatterns("/error")
-                .excludePathPatterns("/user/**");
+                .excludePathPatterns("/user/**");//.excludePathPatterns("/ticket/**");
         // registry.addInterceptor(requestHeaderInterceptor).excludePathPatterns("/user/addUser/**");
     }
 

@@ -12,4 +12,6 @@ public interface UserGroupRepository extends JpaRepository<ModelUserGroup, Integ
     List<ModelUser> findAllByGroupId(Integer groupId);
 
     ModelUserGroup findById(long id);
+
+    ModelUserGroup findByUserId(Integer id);
 }

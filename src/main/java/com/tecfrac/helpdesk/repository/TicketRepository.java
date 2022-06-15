@@ -4,15 +4,14 @@
  */
 package com.tecfrac.helpdesk.repository;
 
+import com.tecfrac.helpdesk.bean.BeanSession;
 import com.tecfrac.helpdesk.model.ModelTicket;
-import com.tecfrac.helpdesk.model.ModelTicketStatus;
-import com.tecfrac.helpdesk.model.ModelUser;
-import com.tecfrac.helpdesk.service.TicketService;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -22,28 +21,41 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TicketRepository extends JpaRepository<ModelTicket, Integer> {
 
-    public Set<ModelTicket> findAllByValid(boolean b);
+    public Set<ModelTicket> findAllByValidAndAssignedGroupId(boolean b, Integer i);
 
     public List<ModelTicket> findAllByAssignedUserIdAndStatusIdNot(Object userId, int Solved);
 
-    public List<ModelTicket> findAllByUpdated(Object object);
+    public List<ModelTicket> findAllByUpdatedAndAssignedGroupId(Object object, Integer i);
 
-    public List<ModelTicket> findAllByAssignedGroupIdAndStatusIdNot(int gourpId, int Solved);
+    public List<ModelTicket> findAllByAssignedGroupIdAndStatusIdNot(int gourpId, int solved);
 
-    public List<ModelTicket> findAllByStatusId(Integer statusId);
+    //   public List<ModelTicket> findAllByUpdatedNot(Date date);
+    public List<ModelTicket> findAllByAssignedGroupIdAndAssignedUserIdNull(Integer i);
 
-    public List<ModelTicket> findAllByUpdatedNot(Date date);
+    public List<ModelTicket> findAllByRequesterIdAndAssignedGroupId(Integer i, Integer j);
 
-    public List<ModelTicket> findAllByAssignedUserIdNull();
+    public List<ModelTicket> findAllByStatusIdOrStatusIdNot(int solved, int closed);
 
-    public List<ModelTicket> findAllByRequesterId(Integer RequesterId);
+    public List<ModelTicket> findAllByStatusIdNotInAndAssignedUserId(List<Integer> statusId, Integer userId);
 
-    public List<ModelTicket> findAllByStatusIdOrStatusIdNot(int Solved, int Closed);
+    public List<ModelTicket> findAllByStatusIdAndAssignedGroupId(Integer i, Integer j);
 
-    public List<ModelTicket> findAllByAssignedUserIdNullAndStatusIdOrStatusIdNot(int Solved, int Closed);
+    public List<ModelTicket> findAllByAssignedGroupIdAndStatusId(Integer groupId, int NEW);
 
-    public List<ModelTicket> findAllByAssignedUserIdAndStatusIdOrStatusIdNot(Integer userId, int Solved, int Closed);
+    public void deleteByIdAndAssignedGroupId(Integer id, Integer userGroupId);
 
-    public List<ModelTicket> findAllByStatusIdAndAssignedGroupId(int i, ModelUser user);
+    public List<ModelTicket> findAllByUpdatedGreaterThanEqual(Date recentlyUpdated);
+
+    public List<ModelTicket> findAllByStatusIdNotInAndAssignedGroupId(List<Integer> asList, Integer userGroupId);
+
+    @Query(value = "SELECT  t.status_id,if(t.status_id=1, sum(if(t.assigned_group_id=:groupId,1,0)) ,count(*)) FROM helpdesk.ticket t group by t.status_id ;", nativeQuery = true)
+    public List<Object[]> countAllByStatusId(@Param("groupId") Integer groupId);
+
+    @Query(value = "SELECT t.status_id,\n"
+            + " if(t.assigned_user_id=1, sum(if(t.assigned_group_id=:groupId ,1,0)),null) 'your unsolved tickets',\n"
+            + " if(t.assigned_user_id is null, sum(if(t.assigned_group_id=:groupId ,1,0)),null) 'unassigned tickets',\n"
+            + "count(*) 'unsolved tickets' \n"
+            + " FROM helpdesk.ticket t where t.status_id not in (0,4,5)", nativeQuery = true)
+    public List<Object[]> countAllUnsolvedUnassigned(@Param("groupId") Integer groupId);
 
 }

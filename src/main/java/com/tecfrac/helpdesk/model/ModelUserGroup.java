@@ -17,21 +17,16 @@ import javax.persistence.Table;
 @Table(name = "user_group")
 public class ModelUserGroup {
 
-    /**
-     *
-     */
     public static final int Default = 1;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
     @ManyToOne
-    @JoinColumn
     @JsonIgnore
     private ModelGroup group;
 
     @ManyToOne
-    @JoinColumn
     private ModelUser user;
 
     public Integer getId() {

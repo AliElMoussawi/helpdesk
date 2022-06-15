@@ -16,12 +16,12 @@ import javax.persistence.Table;
 @Table(name = "user_ticket_status")
 public class ModelTicketStatus {
 
-    public static final int Closed = 0;
+    public static final int CLOSED = 0;
     public static final int NEW = 1;
-    public static final int Open = 2;
-    public static final int Pending = 3;
-    public static final int Solved = 4;
-    public static final int Suspended = 5;
+    public static final int OPEN = 2;
+    public static final int PENDING = 3;
+    public static final int SOLVED = 4; 
+    public static final int SUSPENDED = 5;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

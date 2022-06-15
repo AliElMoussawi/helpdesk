@@ -1,14 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.tecfrac.helpdesk.controller;
 
 import com.tecfrac.helpdesk.bean.BeanSession;
 import com.tecfrac.helpdesk.model.ModelUser;
 import com.tecfrac.helpdesk.request.AddUser;
-import com.tecfrac.helpdesk.service.GroupService;
-import com.tecfrac.helpdesk.service.GroupService.PairUG;
+import com.tecfrac.helpdesk.service.GroupService.PairUserInfo;
 import com.tecfrac.helpdesk.service.UserService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,14 +34,14 @@ public class UserController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/")
-    public ResponseEntity<List<PairUG<String, Integer, String>>> allUsers() throws Exception {
-        List<PairUG<String, Integer, String>> allUsers = userService.allUsers();
+    public ResponseEntity<List<PairUserInfo<String, Integer, String>>> allUsers() throws Exception {
+        List<PairUserInfo<String, Integer, String>> allUsers = userService.allUsers();
         return new ResponseEntity<>(allUsers, HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/allagents")
-    public ResponseEntity<List<PairUG<String, Integer, String>>> allAgents() throws Exception {
-        List<PairUG<String, Integer, String>> allAgents = userService.allAgents();
+    public ResponseEntity<List<PairUserInfo<String, Integer, String>>> allAgents() throws Exception {
+        List<PairUserInfo<String, Integer, String>> allAgents = userService.allAgents();
         return new ResponseEntity<>(allAgents, HttpStatus.OK);
     }
 }

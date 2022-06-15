@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package com.tecfrac.helpdesk.controller;
 
 import com.tecfrac.helpdesk.bean.BeanSession;
@@ -61,7 +58,7 @@ public class TicketController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/newTickets")
     public ResponseEntity<List<ModelTicket>> newTickets() throws Exception {
-        List<ModelTicket> NEWTICKETS = ticketService.newTickets();
+        List<ModelTicket> NEWTICKETS = ticketService.newGroupTickets();
         return new ResponseEntity<>(NEWTICKETS, HttpStatus.OK);
     }
 
@@ -95,7 +92,7 @@ public class TicketController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/userUnSolvedTickets")//
     public ResponseEntity<List<ModelTicket>> userUnSolvedTickets() throws Exception {
-        List<ModelTicket> userUnSolvedTickets = ticketService.userUnSolvedTickets(beanSession.getId());
+        List<ModelTicket> userUnSolvedTickets = ticketService.userUnSolvedTickets(beanSession.getUser().getId());
         return new ResponseEntity<>(userUnSolvedTickets, HttpStatus.OK);
     }
 
@@ -161,6 +158,13 @@ public class TicketController {
             DeletedTickets.add(DELETED);
         }
         return new ResponseEntity<>(DeletedTickets, HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/countTickets")
+    public ResponseEntity<List<Object[]>> countTickets(@RequestParam(value = "statusId") String statusId) throws Exception {
+        Integer status = Integer.parseInt(statusId);
+        List<Object[]> alltickets = ticketService.countTickets();
+        return new ResponseEntity<>(alltickets, HttpStatus.OK);
     }
 
 }

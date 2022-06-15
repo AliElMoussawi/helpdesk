@@ -9,11 +9,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
-/**
- *
- * @author CLICK ONCE
- */
 @Entity
 @Table(name = "user")
 public class ModelUser {
@@ -21,8 +16,7 @@ public class ModelUser {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-    
-    @JoinColumn
+
     @OneToOne
     private ModelUserType userType;
 
@@ -30,13 +24,20 @@ public class ModelUser {
     private String username;
     @Column(unique = true)
     private String email;
-    @Column (columnDefinition = "boolean default 'false'")
+    @Column(columnDefinition = "boolean default 'false'")
     private boolean blocked;
 
-    @JoinColumn
     @ManyToOne
     private ModelCompany company;
 //
+
+    public ModelUser() {
+    }
+
+    public ModelUser(Integer id) {
+        this.id = id;
+    }
+
     public Integer getId() {
         return id;
     }

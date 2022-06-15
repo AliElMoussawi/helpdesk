@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.tecfrac.helpdesk.service.GroupService.PairUG;
+import com.tecfrac.helpdesk.service.GroupService.PairUserInfo;
 
 @Service
 public class GroupService {
@@ -53,10 +53,10 @@ public class GroupService {
             RequestGroupsUsers e = new RequestGroupsUsers();
             e.setName(modelGroup.getName());
             e.setId(modelGroup.getId());
-            List<PairUG<String, Integer, String>> groupusers = new ArrayList<PairUG<String, Integer, String>>();
+            List<PairUserInfo<String, Integer, String>> groupusers = new ArrayList<PairUserInfo<String, Integer, String>>();
             System.out.println(modelGroup.getUser().size());
             for (ModelUserGroup modelUserGroup : modelGroup.getUser()) {
-                PairUG<String, Integer, String> user = new PairUG(modelUserGroup.getUser().getUsername(), modelUserGroup.getUser().getId(),modelUserGroup.getUser().getEmail());
+                PairUserInfo<String, Integer, String> user = new PairUserInfo(modelUserGroup.getUser().getUsername(), modelUserGroup.getUser().getId(),modelUserGroup.getUser().getEmail());
                 groupusers.add(user);
             }
             e.setUser(groupusers);
@@ -78,13 +78,13 @@ public class GroupService {
         return null;
     }
 
-    public static class PairUG<T, S, D> {
+    public static class PairUserInfo<T, S, D> {
 
         T userName;
         S id;
         D email;
 
-        public PairUG(T userName, S id, D email) {
+        public PairUserInfo(T userName, S id, D email) {
             this.userName = userName;
             this.id = id;
             this.email = email;

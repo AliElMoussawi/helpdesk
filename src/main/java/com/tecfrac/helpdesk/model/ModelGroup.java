@@ -28,10 +28,9 @@ public class ModelGroup {
     @Column
     private String name;
     @ManyToOne
-    @JoinColumn
     private ModelCompany company;
 
-    @ManyToMany(mappedBy = "group")
+    @OneToMany(mappedBy = "group")
     List<ModelUserGroup> user;
 
     public Integer getId() {

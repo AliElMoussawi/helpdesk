@@ -2,7 +2,6 @@ package com.tecfrac.helpdesk.bean;
 
 import com.tecfrac.helpdesk.model.*;
 import java.util.Date;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;

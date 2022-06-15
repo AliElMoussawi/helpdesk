@@ -6,7 +6,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.7.0</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
     <groupId>com.tecfrac</groupId>
     <artifactId>helpdesk</artifactId>
@@ -58,6 +58,12 @@
             <version>5.7.1</version>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>com.jpaquery</groupId>
+            <artifactId>jpaquery</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
     </dependencies>
     <build>
         <plugins>

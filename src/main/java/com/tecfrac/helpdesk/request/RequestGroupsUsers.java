@@ -1,19 +1,19 @@
 package com.tecfrac.helpdesk.request;
 
-import com.tecfrac.helpdesk.service.GroupService.PairUG;
+import com.tecfrac.helpdesk.service.GroupService.PairUserInfo;
 import java.util.List;
 
 public class RequestGroupsUsers {
 
     private String name;
     private Integer id;
-    private List<PairUG<String, Integer, String>> user;
+    private List<PairUserInfo<String, Integer, String>> user;
 
-    public List<PairUG<String, Integer, String>> getUser() {
+    public List<PairUserInfo<String, Integer, String>> getUser() {
         return user;
     }
 
-    public void setUser(List<PairUG<String, Integer, String>> user) {
+    public void setUser(List<PairUserInfo<String, Integer, String>> user) {
         this.user = user;
     }
 
