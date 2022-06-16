@@ -44,18 +44,18 @@ public interface TicketRepository extends JpaRepository<ModelTicket, Integer> {
 
     public void deleteByIdAndAssignedGroupId(Integer id, Integer userGroupId);
 
-    public List<ModelTicket> findAllByUpdatedGreaterThanEqual(Date recentlyUpdated);
+    public List<ModelTicket> findAllByStatusIdNotInAndUpdatedGreaterThanEqual(List<Integer> asList, Date recentlyUpdated);
 
     public List<ModelTicket> findAllByStatusIdNotInAndAssignedGroupId(List<Integer> asList, Integer userGroupId);
 
-    @Query(value = "SELECT  t.status_id,if(t.status_id=1, sum(if(t.assigned_group_id=:groupId,1,0)) ,count(*)) FROM helpdesk.ticket t group by t.status_id ;", nativeQuery = true)
+    @Query(value = "SELECT  t.status_id,if(t.status_id=1, sum(if(t.assigned_group_id=:groupId,1,0)) ,count(*)) FROM helpdesk.ticket t group by t.status_id;", nativeQuery = true)
     public List<Object[]> countAllByStatusId(@Param("groupId") Integer groupId);
 
-    @Query(value = "SELECT t.status_id,\n"
-            + " if(t.assigned_user_id=1, sum(if(t.assigned_group_id=:groupId ,1,0)),null) 'your unsolved tickets',\n"
-            + " if(t.assigned_user_id is null, sum(if(t.assigned_group_id=:groupId ,1,0)),null) 'unassigned tickets',\n"
-            + "count(*) 'unsolved tickets' \n"
-            + " FROM helpdesk.ticket t where t.status_id not in (0,4,5)", nativeQuery = true)
-    public List<Object[]> countAllUnsolvedUnassigned(@Param("groupId") Integer groupId);
+    @Query(value = "SELECT \n"
+            + "sum( if(t.assigned_user_id=1, if(t.assigned_group_id=1 ,1,0),0)) 'your unsolved tickets',\n"
+            + " sum(if(t.assigned_user_id is null ,if(t.assigned_group_id=1 ,1,0),0))'unassigned tickets',\n"
+            + " sum(if(t.assigned_group_id=1,1,0)) 'unsolved tickets'\n"
+            + " FROM helpdesk.ticket t where t.status_id not in (0,4,5);", nativeQuery = true)
+    public List<Object[]> countAllUnsolvedUnassigned(@Param("userId") Integer userId, @Param("groupId") Integer groupId);
 
 }

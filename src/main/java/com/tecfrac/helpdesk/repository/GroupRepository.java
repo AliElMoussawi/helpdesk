@@ -15,7 +15,7 @@ public interface GroupRepository extends JpaRepository<ModelGroup, Integer> {
     @Override
     List<ModelGroup> findAll();
 
-    ModelGroup findById(long id);
+    ModelGroup findById(int id);
 
     ModelGroup findByName(String groupName);
 }

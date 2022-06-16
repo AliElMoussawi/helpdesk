@@ -1,4 +1,3 @@
-
 package com.tecfrac.helpdesk.controller;
 
 import com.tecfrac.helpdesk.bean.BeanSession;
@@ -161,10 +160,10 @@ public class TicketController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/countTickets")
-    public ResponseEntity<List<Object[]>> countTickets(@RequestParam(value = "statusId") String statusId) throws Exception {
-        Integer status = Integer.parseInt(statusId);
-        List<Object[]> alltickets = ticketService.countTickets();
+    public ResponseEntity<List<Pair<Integer, Integer>> > countTickets() throws Exception {
+        //  Integer status = Integer.parseInt(statusId);
+        List<Pair<Integer, Integer>>  alltickets = ticketService.countTickets();
+        System.out.println(alltickets);
         return new ResponseEntity<>(alltickets, HttpStatus.OK);
     }
-
 }

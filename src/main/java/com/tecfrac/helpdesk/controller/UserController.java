@@ -27,6 +27,7 @@ public class UserController {
     @RequestMapping(method = RequestMethod.POST, value = "/")
     public ResponseEntity<ModelUser> createUser(@RequestBody AddUser request) throws Exception {
         ModelUser newUser = userService.addUser(request);
+        System.out.println("add new user :"+newUser+"\n"+"request:"+request);
         if (newUser == null) {
             return new ResponseEntity<>(newUser, HttpStatus.ALREADY_REPORTED);
         }

@@ -27,6 +27,7 @@ import com.tecfrac.helpdesk.repository.UserRepository;
 import com.tecfrac.helpdesk.request.RequestAddTicket;
 import com.tecfrac.helpdesk.request.RequestMessageTicket;
 import com.tecfrac.helpdesk.service.AuthenticationService.Pair;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -75,6 +76,10 @@ public class TicketService {
 
     private Integer getUserGroupId() {
         return userGroupRepository.findByUserId(beanSession.getUser().getId()).getId();
+    }
+
+    private Integer getUserId() {
+        return beanSession.getUser().getId();
     }
 
     //first i have to create an post/get/put/delete api's
@@ -199,33 +204,43 @@ public class TicketService {
 
     }
 
-    public List<ModelTicket> unSolvedTickets() {
-        return ticketRepository.findAllByStatusIdNotInAndAssignedGroupId(Arrays.asList(ModelTicketStatus.SOLVED, ModelTicketStatus.CLOSED, ModelTicketStatus.SUSPENDED),getUserGroupId());
-    }
-
-    public List<ModelTicket> recUpdatedTickets() {
-        return ticketRepository.findAllByUpdatedGreaterThanEqual(recentlyUpdated());
-    } 
-    public Integer countRecUpdated() {
-        return recUpdatedTickets().size();
-    }
-
     private static Date recentlyUpdated() {
         Date date = new Date();
         long MILLIS_IN_A_15MIN = 1000 * 60 * 15;
 
         return new Date(date.getTime() - MILLIS_IN_A_15MIN);
-
     }
 
-    public List<ModelTicket> newGroupTickets() {
-        return ticketRepository.findAllByAssignedGroupIdAndStatusId(getUserGroupId(), ModelTicketStatus.NEW);
-        //   return ticketRepository.findAllByStatusIdNot(, ModelTicketStatus.SOLVED)
+    public List<ModelTicket> unSolvedTickets() {
+        return ticketRepository.findAllByStatusIdNotInAndAssignedGroupId(Arrays.asList(ModelTicketStatus.SOLVED, ModelTicketStatus.CLOSED, ModelTicketStatus.SUSPENDED), getUserGroupId());
+    }
+
+    public List<ModelTicket> recTickets(Integer[] array) {
+
+        return ticketRepository.findAllByStatusIdNotInAndUpdatedGreaterThanEqual(Arrays.asList(array), recentlyUpdated());
+    }
+
+    public List<ModelTicket> recUpdatedTickets() {
+        Integer[] c = {ModelTicketStatus.SOLVED, ModelTicketStatus.CLOSED, ModelTicketStatus.SUSPENDED};
+
+        return recTickets(c);
+    }
+
+    public Integer countRecUpdated() {
+        Integer[] a = {ModelTicketStatus.SOLVED, ModelTicketStatus.CLOSED, ModelTicketStatus.SUSPENDED};
+        return recTickets(a).size();
+    }
+
+    public List<ModelTicket> allTicketsByStatusId(Integer statusId) {
+        return ticketRepository.findAllByStatusIdAndAssignedGroupId(statusId, getUserGroupId());
+    }
+
+    public List<ModelTicket> suspendedTickets() {
+        return ticketRepository.findAllByStatusIdAndAssignedGroupId(ModelTicketStatus.SUSPENDED, getUserGroupId());
     }
 
     public List<ModelTicket> pendingTickets() {
         return ticketRepository.findAllByStatusIdAndAssignedGroupId(ModelTicketStatus.PENDING, getUserGroupId());
-
     }
 
     public List<ModelTicket> solvedTickets() {
@@ -243,6 +258,19 @@ public class TicketService {
     public String deletedTicketsForever(Integer id) {
         ticketRepository.deleteByIdAndAssignedGroupId(id, getUserGroupId());
         return id + "";
+    }
+
+    public List<ModelTicket> groupDeletedTickets() {
+        return ticketRepository.findAllByStatusIdAndAssignedGroupId(0, getUserGroupId());
+    }
+
+    public Integer countRecSolved() {
+        Integer[] b = {ModelTicketStatus.NEW, ModelTicketStatus.CLOSED, ModelTicketStatus.OPEN, ModelTicketStatus.PENDING, ModelTicketStatus.SUSPENDED};
+        return recTickets(b).size();
+    }
+
+    public List<ModelTicket> newGroupTickets() {
+        return ticketRepository.findAllByAssignedGroupIdAndStatusId(getUserGroupId(), ModelTicketStatus.NEW);
     }
 
     public ModelTicket deleteTicket(Integer ticketId) {
@@ -278,22 +306,59 @@ public class TicketService {
 
     }
 
-    public List<ModelTicket> allTicketsByStatusId(Integer statusId) {
-        return ticketRepository.findAllByStatusIdAndAssignedGroupId(statusId, getUserGroupId());
-    }
-
-    public List<ModelTicket> suspendedTickets() {
-        return ticketRepository.findAllByStatusIdAndAssignedGroupId(ModelTicketStatus.SUSPENDED, getUserGroupId());
-    }
-
-    public List<ModelTicket> groupDeletedTickets() {
-        return ticketRepository.findAllByStatusIdAndAssignedGroupId(0, getUserGroupId());
-    }
-
-    public List<Object[]> countTickets() {
+    public List<Pair<Integer, Integer>> countTickets() {
         List<Object[]> countStatus = ticketRepository.countAllByStatusId(getUserGroupId());
-       List<Object[]> countUnsolvedUnassigned =ticketRepository.countAllUnsolvedUnassigned(getUserGroupId());
-       Integer countrecupdated=countRecUpdated();
-        return null;//countStatus;
+        List<Object[]> countUnsolvedUnassigned = ticketRepository.countAllUnsolvedUnassigned(getUserId(), getUserGroupId());
+        Integer countrecupdated = countRecUpdated();
+        Integer countrecSolved = countRecSolved();
+        Integer countDeleted = 0;
+        Integer countPending = 0;
+        Integer countSuspended = 0;
+        Integer countNew = 0;
+        for (int i = 0; i < countUnsolvedUnassigned.size(); i++) {
+            Integer status = Integer.valueOf(String.valueOf(countStatus.get(i)[0]));
+            Integer value = Integer.valueOf(String.valueOf(countStatus.get(i)[0]));
+            System.out.println("status " + i + " " + status + " - value " + value);
+        }
+        //System.out.println("check what is this : " + Integer.valueOf(String.valueOf(countUnsolvedUnassigned.get(0)[0])));
+        List<Pair<Integer, Integer>> counter = new ArrayList<Pair<Integer, Integer>>();
+        for (int i = 0; i < 9; i++) {
+
+            Pair<Integer, Integer> countView = new Pair<Integer, Integer>(i, 0);
+
+            if (i < 3) {
+                countView.second = Integer.valueOf(String.valueOf(countUnsolvedUnassigned.get(0)[i]));
+            } else if (i == 3) {
+                countView.second = countrecupdated;
+                countPending = Integer.valueOf(String.valueOf(countStatus.get(i)[0]));
+
+            }
+            if (i < countStatus.size()) {
+                int status = Integer.valueOf(String.valueOf(countStatus.get(i)[0]));
+                if (status == 0) {
+                    countDeleted = Integer.valueOf(String.valueOf(countStatus.get(i)[1]));
+                } else if (status == 1) {
+                    countNew = Integer.valueOf(String.valueOf(countStatus.get(i)[1]));
+                } else if (status == 3) {
+                    countSuspended = Integer.valueOf(String.valueOf(countStatus.get(i)[1]));
+                } else if (status == 5) {
+                    countSuspended = Integer.valueOf(String.valueOf(countStatus.get(i)[1]));
+                }
+            }
+            counter.add(countView);
+        }
+        counter.get(4).second = countNew;
+        System.out.println("check countNew : " + countNew);
+        counter.get(5).second = countPending;
+        System.out.println("check countPending : " + countPending);
+        counter.get(6).second = countrecSolved;
+        System.out.println("check countrecSolved : " + countrecSolved);
+        counter.get(7).second = countSuspended;
+        System.out.println("check countSuspended : " + countSuspended);
+
+        counter.get(8).second = countDeleted;
+        System.out.println("check countDeleted : " + countDeleted);
+
+        return counter;
     }
 }

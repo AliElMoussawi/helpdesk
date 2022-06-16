@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.tecfrac.helpdesk.service;
 
 import com.tecfrac.helpdesk.bean.BeanSession;
@@ -25,10 +21,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.web.bind.annotation.RequestParam;
 
-/**
- *
- * @author CLICK ONCE
- */
 @Service
 public class AuthenticationService {
 
@@ -59,10 +51,6 @@ public class AuthenticationService {
 
         public S getSecond() {
             return second;
-        }
-
-        public Pair() {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
         }
     }
 

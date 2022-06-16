@@ -50,12 +50,12 @@ public class UserService {
                 user.setCompany(beanSession.getUser().getCompany());
             }
             userRepository.save(user);
-
-            authenticationService.forgetPassword(user.getEmail());
+            //  authenticationService.forgetPassword(user.getEmail());
             ModelUserGroup userGr = new ModelUserGroup();
             userGr.setGroup(groupRepository.findById(ModelGroup.Default));
             userGr.setUser(user);
             userGroupRepository.save(userGr);
+            System.out.println("user : " + user);
             return user;
         } else {
             return null;
