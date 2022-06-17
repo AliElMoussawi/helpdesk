@@ -19,6 +19,7 @@ import com.tecfrac.helpdesk.model.ModelUserType;
 import com.tecfrac.helpdesk.repository.GroupRepository;
 import com.tecfrac.helpdesk.repository.MessageRepository;
 import com.tecfrac.helpdesk.repository.TagRepository;
+import com.tecfrac.helpdesk.repository.TicketMessageRepository;
 import com.tecfrac.helpdesk.repository.TicketRepository;
 import com.tecfrac.helpdesk.repository.TicketStatusRepository;
 import com.tecfrac.helpdesk.repository.TicketTypeRepository;
@@ -73,6 +74,8 @@ public class TicketService {
     private UserRepository userRepository;
     @Autowired
     private UserGroupRepository userGroupRepository;
+    @Autowired
+    private TicketMessageRepository ticketMessageRepository;
 
     private Integer getUserGroupId() {
         return userGroupRepository.findByUserId(beanSession.getUser().getId()).getId();
@@ -258,6 +261,11 @@ public class TicketService {
     public String deletedTicketsForever(Integer id) {
         ticketRepository.deleteByIdAndAssignedGroupId(id, getUserGroupId());
         return id + "";
+    }
+
+    public List<ModelTicketMessage> getTicketMessges(Integer id) {
+        return ticketMessageRepository.findAllByticketIdOrderByDateCreationDesc(id); //(id, getUserGroupId());
+
     }
 
     public List<ModelTicket> groupDeletedTickets() {

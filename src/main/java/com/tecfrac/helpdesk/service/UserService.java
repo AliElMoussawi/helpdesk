@@ -15,7 +15,10 @@ import com.tecfrac.helpdesk.service.GroupService.PairUserInfo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -47,6 +50,9 @@ public class UserService {
             Optional<ModelUserType> userType = userTypeRepository.findById(userInfo.getCategory());
             user.setUserType(userType.get());
             if (((int) userInfo.getCategory()) != ModelUserType.NewUser) {
+                System.out.println("bean Session :" + beanSession.getUser());
+                System.out.println("bean Session user company:" + beanSession.getUser().getCompany().getId());
+
                 user.setCompany(beanSession.getUser().getCompany());
             }
             userRepository.save(user);
@@ -57,9 +63,9 @@ public class UserService {
             userGroupRepository.save(userGr);
             System.out.println("user : " + user);
             return user;
-        } else {
-            return null;
         }
+        return null;
+
     }
 
     public List<PairUserInfo<String, Integer, String>> allUsers() {

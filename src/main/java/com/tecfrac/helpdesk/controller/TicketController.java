@@ -2,6 +2,7 @@ package com.tecfrac.helpdesk.controller;
 
 import com.tecfrac.helpdesk.bean.BeanSession;
 import com.tecfrac.helpdesk.model.ModelTicket;
+import com.tecfrac.helpdesk.model.ModelTicketMessage;
 import com.tecfrac.helpdesk.model.ModelUser;
 import com.tecfrac.helpdesk.request.RequestAddTicket;
 import com.tecfrac.helpdesk.request.RequestDeleteTickets;
@@ -160,10 +161,16 @@ public class TicketController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/countTickets")
-    public ResponseEntity<List<Pair<Integer, Integer>> > countTickets() throws Exception {
+    public ResponseEntity<List<Pair<Integer, Integer>>> countTickets() throws Exception {
         //  Integer status = Integer.parseInt(statusId);
-        List<Pair<Integer, Integer>>  alltickets = ticketService.countTickets();
+        List<Pair<Integer, Integer>> alltickets = ticketService.countTickets();
         System.out.println(alltickets);
         return new ResponseEntity<>(alltickets, HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/getTicketMessages/{id}")//
+    public ResponseEntity<List<ModelTicketMessage>> getTicketMessages(@PathVariable Integer id) throws Exception {
+        List<ModelTicketMessage> getTicketMessages = ticketService.getTicketMessges(id);
+        return new ResponseEntity<>(getTicketMessages, HttpStatus.OK);
     }
 }
