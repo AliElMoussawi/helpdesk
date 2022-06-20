@@ -369,4 +369,32 @@ public class TicketService {
 
         return counter;
     }
+
+    public ModelTicket mergeTicketsInto(Integer id, List<Integer> ticketsIds) {
+        ModelTicket ticket = ticketRepository.findById(id).get();
+        ModelUser assignee = ticket.getAssignedUser();
+        String deleteddIds = "";
+        for (Integer ticketId : ticketsIds) {
+            String DELETED = deletedTicketsForever(ticketId);
+            deleteddIds += " #" + ticketId + ",";
+        }
+        ModelTicketMessage message = null;
+        message = new ModelTicketMessage();
+        message.setDateCreation(new Date());
+        message.setMessage("Requests " + deleteddIds + " were closed and merged into this request");
+        message.setUser(beanSession.getUser());
+        message.setTicket(ticket);
+        message.setUseType(beanSession.getUser().getUserType());
+
+        message.setInTernal(Boolean.FALSE);
+//        RequestMessageTicket requestMessageTicket = new RequestMessageTicket();
+//        requestMessageTicket.setMessage(request.getMessage());
+//        requestMessageTicket.setRequesterId(ticket.getRequester().getId());
+//        requestMessageTicket.setSubject(ticket.getSubject());
+        messageRepository.save(message);
+
+//    ticketRepository.save (ticket);
+        return ticket;
+    }
+
 }

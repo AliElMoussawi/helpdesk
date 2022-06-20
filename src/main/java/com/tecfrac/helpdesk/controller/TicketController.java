@@ -173,4 +173,11 @@ public class TicketController {
         List<ModelTicketMessage> getTicketMessages = ticketService.getTicketMessges(id);
         return new ResponseEntity<>(getTicketMessages, HttpStatus.OK);
     }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/mergeTicketMessages/{id}")//
+    public ResponseEntity<ModelTicket> mergeTicketMessages(@PathVariable Integer id, @RequestBody RequestDeleteTickets tickets) throws Exception {
+        ModelTicket getTicketMessages = ticketService.mergeTicketsInto(id, tickets.getTicketsIds());
+        return new ResponseEntity<>(getTicketMessages, HttpStatus.OK);
+    }
+
 }
