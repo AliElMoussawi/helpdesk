@@ -4,6 +4,7 @@
  */
 package com.tecfrac.helpdesk.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Date;
 
@@ -57,9 +58,10 @@ public class ModelTicket {
     @ManyToOne
     @JoinColumn
     private ModelGroup assignedGroup;
-
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @Column
     private Date requested;
+    @JsonFormat(pattern="yyyy-MM-dd")
     @Column
     private Date updated;
 

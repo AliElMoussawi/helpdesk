@@ -18,4 +18,8 @@ public interface GroupRepository extends JpaRepository<ModelGroup, Integer> {
     ModelGroup findById(int id);
 
     ModelGroup findByName(String groupName);
+
+    public ModelGroup findByNameAndCompanyId(String support, Integer id);
+
+    public List<ModelGroup> findAllByCompanyId(Integer id);
 }

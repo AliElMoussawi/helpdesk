@@ -87,7 +87,7 @@ public class TicketService {
 
     //first i have to create an post/get/put/delete api's
     public ModelTicket addTicket(@RequestParam(required = true) RequestAddTicket request) throws HelpDeskException {
-
+        request.setValid(true);
         return addOrEditTicket(null, request);
     }
 
@@ -198,12 +198,12 @@ public class TicketService {
         return ticketRepository.findAll();
     }
 
-    public List<ModelTicket> userUnSolvedTickets(Integer userId) {
-        return ticketRepository.findAllByStatusIdNotInAndAssignedUserId(Arrays.asList(ModelTicketStatus.SOLVED, ModelTicketStatus.CLOSED, ModelTicketStatus.SUSPENDED), userId);
+    public List<ModelTicket> userUnSolvedTickets(ModelUser userId) {
+        return ticketRepository.findAllByStatusIdNotInAndAssignedUser(Arrays.asList(ModelTicketStatus.SOLVED, ModelTicketStatus.CLOSED, ModelTicketStatus.SUSPENDED), userId);
     }
 
     public List<ModelTicket> unAssignedTickets() {
-        return ticketRepository.findAllByStatusIdNotInAndAssignedUserId(Arrays.asList(ModelTicketStatus.SOLVED, ModelTicketStatus.CLOSED, ModelTicketStatus.SUSPENDED), null);
+        return ticketRepository.findAllByStatusIdNotInAndAssignedUser(Arrays.asList(ModelTicketStatus.SOLVED, ModelTicketStatus.CLOSED, ModelTicketStatus.SUSPENDED), null);
 
     }
 

@@ -49,19 +49,17 @@ public class UserService {
             user.setUsername(userInfo.getUsername());
             Optional<ModelUserType> userType = userTypeRepository.findById(userInfo.getCategory());
             user.setUserType(userType.get());
-            if (((int) userInfo.getCategory()) != ModelUserType.NewUser) {
-                System.out.println("bean Session :" + beanSession.getUser());
-                System.out.println("bean Session user company:" + beanSession.getUser().getCompany().getId());
+            user.setCompany(beanSession.getUser().getCompany());
 
-                user.setCompany(beanSession.getUser().getCompany());
-            }
-            userRepository.save(user);
-            //  authenticationService.forgetPassword(user.getEmail());
             ModelUserGroup userGr = new ModelUserGroup();
-            userGr.setGroup(groupRepository.findById(ModelGroup.Default));
-            userGr.setUser(user);
-            userGroupRepository.save(userGr);
+            if (((int) userInfo.getCategory()) != ModelUserType.NewUser) {
+
+                userGr.setGroup(groupRepository.findByNameAndCompanyId("Support", beanSession.getUser().getCompany().getId()));
+                userGr.setUser(user);
+                userGroupRepository.save(userGr);
+            }
             System.out.println("user : " + user);
+            userRepository.save(user);
             return user;
         }
         return null;
@@ -69,7 +67,7 @@ public class UserService {
     }
 
     public List<PairUserInfo<String, Integer, String>> allUsers() {
-        List<ModelUser> modelUser = userRepository.findAll();
+        List<ModelUser> modelUser = userRepository.findAllByCompanyId(beanSession.getUser().getCompany().getId());
         List<PairUserInfo<String, Integer, String>> allUsers = new ArrayList<PairUserInfo<String, Integer, String>>();
         for (ModelUser user : modelUser) {
             PairUserInfo<String, Integer, String> modeluser = new PairUserInfo(user.getUsername(), user.getId(), user.getEmail());

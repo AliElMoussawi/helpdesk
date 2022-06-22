@@ -1,5 +1,6 @@
 package com.tecfrac.helpdesk.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,10 +29,10 @@ public class ModelSession {
 
     @Column(name = "token")
     private String token;
-
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "date_creation")
     private Date dateCreation = new Date();
-
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "date_expired")
     private Date dateExpired;
 

@@ -1,5 +1,6 @@
 package com.tecfrac.helpdesk.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -7,7 +8,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
 
 @Entity
 @Table(name = "user_password")
@@ -22,10 +22,10 @@ public class ModelUserPassword {
 
     @Column(name = "password")
     private String password;
-
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "date_creation")
     private Date dateCreation;
-
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "date_expired")
     private Date dateExpired;
     @Column(name = "`valid`")
@@ -70,8 +70,6 @@ public class ModelUserPassword {
     public void setDateExpired(Date dateExpired) {
         this.dateExpired = dateExpired;
     }
-
-
 
     public boolean isValid() {
         return valid;

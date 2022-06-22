@@ -92,7 +92,7 @@ public class TicketController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/userUnSolvedTickets")//
     public ResponseEntity<List<ModelTicket>> userUnSolvedTickets() throws Exception {
-        List<ModelTicket> userUnSolvedTickets = ticketService.userUnSolvedTickets(beanSession.getUser().getId());
+        List<ModelTicket> userUnSolvedTickets = ticketService.userUnSolvedTickets(beanSession.getUser());
         return new ResponseEntity<>(userUnSolvedTickets, HttpStatus.OK);
     }
 

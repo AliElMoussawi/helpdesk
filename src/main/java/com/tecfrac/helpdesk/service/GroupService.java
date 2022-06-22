@@ -48,7 +48,7 @@ public class GroupService {
 
     public List<RequestGroupsUsers> findAll() {
         List<RequestGroupsUsers> object = new ArrayList<RequestGroupsUsers>();
-        List<ModelGroup> result = groupRepository.findAll();
+        List<ModelGroup> result = groupRepository.findAllByCompanyId(beanSession.getUser().getCompany().getId());
         for (ModelGroup modelGroup : result) {
             RequestGroupsUsers e = new RequestGroupsUsers();
             e.setName(modelGroup.getName());
@@ -56,7 +56,7 @@ public class GroupService {
             List<PairUserInfo<String, Integer, String>> groupusers = new ArrayList<PairUserInfo<String, Integer, String>>();
             System.out.println(modelGroup.getUser().size());
             for (ModelUserGroup modelUserGroup : modelGroup.getUser()) {
-                PairUserInfo<String, Integer, String> user = new PairUserInfo(modelUserGroup.getUser().getUsername(), modelUserGroup.getUser().getId(),modelUserGroup.getUser().getEmail());
+                PairUserInfo<String, Integer, String> user = new PairUserInfo(modelUserGroup.getUser().getUsername(), modelUserGroup.getUser().getId(), modelUserGroup.getUser().getEmail());
                 groupusers.add(user);
             }
             e.setUser(groupusers);

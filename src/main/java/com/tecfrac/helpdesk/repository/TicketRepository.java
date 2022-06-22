@@ -6,6 +6,7 @@ package com.tecfrac.helpdesk.repository;
 
 import com.tecfrac.helpdesk.bean.BeanSession;
 import com.tecfrac.helpdesk.model.ModelTicket;
+import com.tecfrac.helpdesk.model.ModelUser;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -36,7 +37,7 @@ public interface TicketRepository extends JpaRepository<ModelTicket, Integer> {
 
     public List<ModelTicket> findAllByStatusIdOrStatusIdNot(int solved, int closed);
 
-    public List<ModelTicket> findAllByStatusIdNotInAndAssignedUserId(List<Integer> statusId, Integer userId);
+    public List<ModelTicket> findAllByStatusIdNotInAndAssignedUser(List<Integer> statusId, ModelUser userId);
 
     public List<ModelTicket> findAllByStatusIdAndAssignedGroupId(Integer i, Integer j);
 
@@ -48,7 +49,9 @@ public interface TicketRepository extends JpaRepository<ModelTicket, Integer> {
 
     public List<ModelTicket> findAllByStatusIdNotInAndAssignedGroupId(List<Integer> asList, Integer userGroupId);
 
-    @Query(value = "SELECT  t.status_id,if(t.status_id=1, sum(if(t.assigned_group_id=:groupId,1,0)) ,count(*)) FROM helpdesk.ticket t group by t.status_id;", nativeQuery = true)
+    @Query(value = "(select id ,sum(counter) as count from (select id,counter from user_ticket_status f union\n"
+            + "(SELECT  t.status_id,if(t.status_id=1, sum(if(t.assigned_group_id=:groupId,1,0)) ,count(*)) FROM helpdesk.ticket t group by t.status_id))\n"
+            + "a group by id)", nativeQuery = true)
     public List<Object[]> countAllByStatusId(@Param("groupId") Integer groupId);
 
     @Query(value = "SELECT \n"
