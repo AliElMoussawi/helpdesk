@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @CrossOrigin
 @Controller
 @RequestMapping("/company")
-//@RestController
 public class CompanyController {
 
     @Autowired

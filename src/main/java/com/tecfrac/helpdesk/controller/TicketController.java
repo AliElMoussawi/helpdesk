@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @CrossOrigin
 @Controller
 @RequestMapping("/ticket")
-//@RestController
 public class TicketController {
 
     @Autowired

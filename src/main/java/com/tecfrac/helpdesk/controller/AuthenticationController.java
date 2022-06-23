@@ -60,10 +60,9 @@ public class AuthenticationController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/signOut")
     public ResponseEntity<String> signOut() throws Exception {
-        System.out.println("session Id sign out"+beanSession.getId());
+        System.out.println("session Id sign out" + beanSession.getId());
         authenticationService.signOut(beanSession.getId());
         return new ResponseEntity<>("signed out", HttpStatus.OK);
-
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/forgot")

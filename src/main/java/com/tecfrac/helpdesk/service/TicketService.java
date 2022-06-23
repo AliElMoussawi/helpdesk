@@ -36,10 +36,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
-/**
- *
- * @author CLICK ONCE
- */
 @Service
 public class TicketService {
 
