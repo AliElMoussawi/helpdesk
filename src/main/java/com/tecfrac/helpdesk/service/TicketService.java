@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.tecfrac.helpdesk.service;
 
 import com.tecfrac.helpdesk.repository.TicketPriorityRepository;
@@ -199,12 +195,11 @@ public class TicketService {
     }
 
     public List<ModelTicket> userUnSolvedTickets(ModelUser userId) {
-        return ticketRepository.findAllByStatusIdNotInAndAssignedUser(Arrays.asList(ModelTicketStatus.SOLVED, ModelTicketStatus.CLOSED, ModelTicketStatus.SUSPENDED), userId);
+        return ticketRepository.findAllByStatusIdNotInAndAssignedUserAndAssignedGroupId(Arrays.asList(ModelTicketStatus.SOLVED, ModelTicketStatus.CLOSED, ModelTicketStatus.SUSPENDED), beanSession.getUser(), getUserGroupId());
     }
 
     public List<ModelTicket> unAssignedTickets() {
-        return ticketRepository.findAllByStatusIdNotInAndAssignedUser(Arrays.asList(ModelTicketStatus.SOLVED, ModelTicketStatus.CLOSED, ModelTicketStatus.SUSPENDED), null);
-
+        return ticketRepository.findAllByStatusIdNotInAndAssignedUserAndAssignedGroupId(Arrays.asList(ModelTicketStatus.SOLVED, ModelTicketStatus.CLOSED, ModelTicketStatus.SUSPENDED), null, getUserGroupId());
     }
 
     private static Date recentlyUpdated() {
@@ -356,17 +351,10 @@ public class TicketService {
             counter.add(countView);
         }
         counter.get(4).second = countNew;
-        System.out.println("check countNew : " + countNew);
         counter.get(5).second = countPending;
-        System.out.println("check countPending : " + countPending);
         counter.get(6).second = countrecSolved;
-        System.out.println("check countrecSolved : " + countrecSolved);
         counter.get(7).second = countSuspended;
-        System.out.println("check countSuspended : " + countSuspended);
-
         counter.get(8).second = countDeleted;
-        System.out.println("check countDeleted : " + countDeleted);
-
         return counter;
     }
 

@@ -1,7 +1,6 @@
 package com.tecfrac.helpdesk.service;
 
 import com.tecfrac.helpdesk.bean.BeanSession;
-import com.tecfrac.helpdesk.model.ModelGroup;
 import com.tecfrac.helpdesk.model.ModelUser;
 import com.tecfrac.helpdesk.model.ModelUserGroup;
 import com.tecfrac.helpdesk.model.ModelUserType;
@@ -13,12 +12,10 @@ import com.tecfrac.helpdesk.repository.UserTypeRepository;
 import com.tecfrac.helpdesk.request.AddUser;
 import com.tecfrac.helpdesk.service.GroupService.PairUserInfo;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -67,8 +64,8 @@ public class UserService {
     }
 
     public List<PairUserInfo<String, Integer, String>> allUsers() {
-        List<ModelUser> modelUser = userRepository.findAllByCompanyId(beanSession.getUser().getCompany().getId());
-        List<PairUserInfo<String, Integer, String>> allUsers = new ArrayList<PairUserInfo<String, Integer, String>>();
+        List<ModelUser> modelUser = userRepository.findAllByCompany(beanSession.getUser().getCompany());
+        List<PairUserInfo<String, Integer, String>> allUsers = new ArrayList<>();
         for (ModelUser user : modelUser) {
             PairUserInfo<String, Integer, String> modeluser = new PairUserInfo(user.getUsername(), user.getId(), user.getEmail());
             allUsers.add(modeluser);
@@ -77,8 +74,9 @@ public class UserService {
     }
 
     public List<PairUserInfo<String, Integer, String>> allAgents() {
-        List<ModelUser> modelUser = userRepository.findAllByUserTypeIdOrUserTypeId(2, 4);
-        List<PairUserInfo<String, Integer, String>> agents = new ArrayList<PairUserInfo<String, Integer, String>>();
+        Integer a[] = new Integer[]{1};
+        List<ModelUser> modelUser = userRepository.findAllByUserTypeIdNotInAndCompany(Arrays.asList(a), beanSession.getUser().getCompany());
+        List<PairUserInfo<String, Integer, String>> agents = new ArrayList<>();
         for (ModelUser user : modelUser) {
             PairUserInfo<String, Integer, String> modeluser = new PairUserInfo(user.getUsername(), user.getId(), user.getEmail());
             agents.add(modeluser);
