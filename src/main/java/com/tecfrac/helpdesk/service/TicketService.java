@@ -70,7 +70,9 @@ public class TicketService {
     private TicketMessageRepository ticketMessageRepository;
 
     private Integer getUserGroupId() {
-        return userGroupRepository.findByUserId(beanSession.getUser().getId()).getId();
+        System.out.println("user group id :"+userGroupRepository.findByUserId(beanSession.getUser().getId()).getGroup().getId());
+        return userGroupRepository.findByUserId(beanSession.getUser().getId()).getGroup().getId();
+        
     }
 
     private Integer getUserId() {
@@ -149,9 +151,9 @@ public class TicketService {
             message.setUseType(beanSession.getUser().getUserType());
             if (beanSession.getUser().getUserType().getId() != ModelUserType.NewUser) {// 0 the index of the normal user 
 
-                message.setInTernal(request.getInternal());
+                message.setInternal(request.getInternal());
             } else {
-                message.setInTernal(Boolean.FALSE);
+                message.setInternal(Boolean.FALSE);
             }
             RequestMessageTicket requestMessageTicket = new RequestMessageTicket();
             requestMessageTicket.setMessage(request.getMessage());
@@ -254,9 +256,12 @@ public class TicketService {
         return id + "";
     }
 
-    public List<ModelTicketMessage> getTicketMessges(Integer id) {
-        return ticketMessageRepository.findAllByticketIdOrderByDateCreationDesc(id); //(id, getUserGroupId());
-
+    public List<ModelTicketMessage> getTicketMessges(Integer id,Integer userId) {
+        if(userRepository.findById(userId).get().getUserType().getId()!=1){
+            
+        return ticketMessageRepository.findAllByticketIdAndInternalNotOrderByDateCreationDesc(id,true); //(id, getUserGroupId());
+        }
+        return ticketMessageRepository.findAllByticketIdOrderByDateCreationDesc(id);
     }
 
     public List<ModelTicket> groupDeletedTickets() {
@@ -370,7 +375,7 @@ public class TicketService {
         message.setTicket(ticket);
         message.setUseType(beanSession.getUser().getUserType());
 
-        message.setInTernal(Boolean.FALSE);
+        message.setInternal(Boolean.FALSE);
 //        RequestMessageTicket requestMessageTicket = new RequestMessageTicket();
 //        requestMessageTicket.setMessage(request.getMessage());
 //        requestMessageTicket.setRequesterId(ticket.getRequester().getId());

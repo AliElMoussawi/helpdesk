@@ -35,7 +35,7 @@ public class ModelTicketMessage {
     @ManyToOne
     @JoinColumn
     private ModelUserType useType;
-    private Boolean inTernal;
+    private Boolean internal;
 
     public Integer getId() {
         return id;
@@ -85,12 +85,12 @@ public class ModelTicketMessage {
         this.useType = useType;
     }
 
-    public Boolean getInTernal() {
-        return inTernal;
+    public Boolean getInternal() {
+        return internal;
     }
 
-    public void setInTernal(Boolean inTernal) {
-        this.inTernal = inTernal;
+    public void setInternal(Boolean internal) {
+        this.internal = internal;
     }
 
 }

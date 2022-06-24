@@ -14,4 +14,6 @@ public interface TicketMessageRepository extends JpaRepository<ModelTicketMessag
 
     public List<ModelTicketMessage> findAllByticketIdOrderByDateCreationDesc(Integer id);
 
+    public List<ModelTicketMessage> findAllByticketIdAndInternalNotOrderByDateCreationDesc(Integer id, boolean b);
+
 }

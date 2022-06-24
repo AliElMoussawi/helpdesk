@@ -167,9 +167,9 @@ public class TicketController {
         return new ResponseEntity<>(alltickets, HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/getTicketMessages/{id}")//
-    public ResponseEntity<List<ModelTicketMessage>> getTicketMessages(@PathVariable Integer id) throws Exception {
-        List<ModelTicketMessage> getTicketMessages = ticketService.getTicketMessges(id);
+    @RequestMapping(method = RequestMethod.GET, value = "/getTicketMessages/{id}/uI:{userId}")//
+    public ResponseEntity<List<ModelTicketMessage>> getTicketMessages(@PathVariable Integer id,@PathVariable Integer userId ) throws Exception {
+        List<ModelTicketMessage> getTicketMessages = ticketService.getTicketMessges(id,userId);
         return new ResponseEntity<>(getTicketMessages, HttpStatus.OK);
     }
 
