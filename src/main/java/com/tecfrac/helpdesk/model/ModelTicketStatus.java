@@ -37,7 +37,8 @@ public class ModelTicketStatus {
     public void setId(Integer id) {
         this.id = id;
     }
-
+ 
+    
     public String getStatus() {
         return status;
     }
