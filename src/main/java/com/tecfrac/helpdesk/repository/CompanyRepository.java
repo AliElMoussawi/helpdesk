@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CompanyRepository extends JpaRepository<ModelCompany, Integer> {
+public interface CompanyRepository extends JpaRepository<ModelCompany, Long> {
     
     public String findByEmail(String companyEmail);
 

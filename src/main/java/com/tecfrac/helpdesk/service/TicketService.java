@@ -1,5 +1,6 @@
 package com.tecfrac.helpdesk.service;
 
+import com.tecfrac.helpdesk.bean.BeanPair;
 import com.tecfrac.helpdesk.repository.TicketPriorityRepository;
 import com.tecfrac.helpdesk.bean.BeanSession;
 import com.tecfrac.helpdesk.exception.HelpDeskException;
@@ -22,8 +23,8 @@ import com.tecfrac.helpdesk.repository.TicketTypeRepository;
 import com.tecfrac.helpdesk.repository.UserGroupRepository;
 import com.tecfrac.helpdesk.repository.UserRepository;
 import com.tecfrac.helpdesk.request.RequestAddTicket;
+import com.tecfrac.helpdesk.request.RequestGetTicket;
 import com.tecfrac.helpdesk.request.RequestMessageTicket;
-import com.tecfrac.helpdesk.service.AuthenticationService.Pair;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -32,18 +33,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Service
-public class TicketService {
-
-    private JavaMailSender javaMailSender;
+public class TicketService {}
+    /*
     @Autowired
     private MessageRepository messageRepository;
-    @Autowired
-    EmailService emailService;
 
     @Autowired
     private BeanSession beanSession;
@@ -69,31 +66,116 @@ public class TicketService {
     @Autowired
     private TicketMessageRepository ticketMessageRepository;
 
-    private Integer getUserGroupId() {
-        System.out.println("user group id :" + userGroupRepository.findByUserId(beanSession.getUser().getId()).getGroup().getId());
-        return userGroupRepository.findByUserId(beanSession.getUser().getId()).getGroup().getId();
+    private List<ModelGroup> getUserGroupsId(ModelUser user) {
+        List<ModelGroup> group = new ArrayList<>();
+        if (user.getUserType().getId() == ModelUserType.Administrator) {
+            return groupRepository.findAllByCompanyId(user.getCompany().getId());
+        } else if (user.getUserType().getId() != ModelUserType.User) {
+            group.add(userGroupRepository.findByUserId(user.getId()).getGroup());
 
+        }
+        return group;
     }
 
-    private Integer getUserId() {
+    private Long getUserId() {
         return beanSession.getUser().getId();
     }
 
-    //first i have to create an post/get/put/delete api's
+    public ModelTicket mergeTicketsInto(Long id, List<Long> ticketsIds, ModelUser user) {
+        ModelTicket ticket = ticketRepository.findById(id).get();
+        ModelUser assignee = ticket.getAssignedUser();
+        String deletedIds = "#";
+        for (Long ticketId : ticketsIds) {
+            String deleted = deletedTicketsForever(ticketId, user).getId().toString();
+            deletedIds += deleted + ",";
+        }
+        deletedIds = deletedIds.substring(0, deletedIds.length() - 1);
+        ModelTicketMessage message = new ModelTicketMessage();
+        message.setDateCreation(new Date());
+        message.setMessage("Requests " + deletedIds + " were closed and merged into this request");
+        message.setUser(beanSession.getUser());
+        message.setTicket(ticket);
+        message.setUseType(beanSession.getUser().getUserType());
+        message.setInternal(Boolean.FALSE);
+        messageRepository.save(message);
+
+        return ticket;
+    }
+
+    public ModelTicket deletedTicketsForever(Long id, ModelUser user) {
+        ModelTicket ticket = ticketRepository.findById(id).get();
+        ticketRepository.deleteByAssignedGroupInAndId(getUserGroupsId(user), id);
+        return ticket;
+    }
+
+    public List<ModelTicketMessage> getTicketMessges(Long id) {
+        if (beanSession.getUser().getUserType().getId() != 1) {
+            return ticketMessageRepository.findAllByticketIdOrderByDateCreationDesc(id);
+            //(id, getUserGroupId());
+        }
+        return ticketMessageRepository.findAllByticketIdAndInternalNotOrderByDateCreationDesc(id, true);
+    }
+
+    public BeanPair<Long, String> getLastMessages(Long id) {
+        ModelUser user = beanSession.getUser();
+        user = userRepository.findById(1).get();
+        BeanPair<Long, String> message = new BeanPair<>(user.getId(), "");
+        String lastMessage = "";
+        if (user.getUserType().getId() == ModelUserType.User) {
+            System.out.println("user type " + ModelUserType.User);
+            lastMessage = ticketMessageRepository.findTopByticketIdAndInternalNotOrderByIdDesc(id, true).getMessage();
+        } else {
+            lastMessage = ticketMessageRepository.findTopByticketIdOrderByIdDesc(id).getMessage();
+        }
+        message.setSecond(lastMessage);
+        return message;
+    }
+
+    private static Date recentlyUpdated() {
+        Date date = new Date();
+        long MILLIS_IN_A_15MIN = 1000 * 60 * 15;
+
+        return new Date(date.getTime() - MILLIS_IN_A_15MIN);
+    }
+
+    public Set<ModelTag> tag(List<String> tags, ModelTicket ticket) {
+        Set<ModelTag> modelTags = new HashSet<>();
+        for (String Tag : tags) {
+            if (tagRepository.findByTag(Tag) == null) {
+                ModelTag tag = new ModelTag();
+                tag.setTag(Tag);
+                tag.setTicketId(ticket.getId());
+                tagRepository.save(tag);
+                modelTags.add(tag);
+            }
+        }
+        return modelTags;
+    }
+
+    public ModelTicket updateTicket(RequestAddTicket ticketDetails, ModelUser user) throws HelpDeskException {
+        ModelTicket ticket = ticketRepository.findById(ticketDetails.getId()).get();
+
+        if (ticketDetails.getStatusId() == ModelTicketStatus.SUSPENDED) {
+            return spamTicket(ticketDetails.getId(), user).getFirst();
+        } else if (ticket.getStatus().getId() == ModelTicketStatus.CLOSED && ticketDetails.getStatusId() != ModelTicketStatus.CLOSED) {
+            undeleteTicket(ticket);
+        }
+        return addOrEditTicket(ticket, ticketDetails);
+    }
+
     public ModelTicket addTicket(@RequestParam(required = true) RequestAddTicket request) throws HelpDeskException {
-        request.setValid(true);
         return addOrEditTicket(null, request);
     }
 
     public ModelTicket addOrEditTicket(ModelTicket ticket, @RequestParam(required = true) RequestAddTicket request) throws HelpDeskException {
-        Set<ModelTag> tags = new HashSet<ModelTag>();
+        Set<ModelTag> tags = new HashSet<>();
         ModelTicketStatus status = null;
         if (ticket != null) {
+
             if (request.getTypeId() != null) {
                 Optional<ModelTicketType> ticketType = ticketTypeRepository.findById(request.getTypeId());
                 ticket.setTicketType(ticketType.get());
             }
-            System.out.println("priority:" + request.getPriorityId());
             if (request.getPriorityId() != null) {
                 Optional<ModelTicketPriority> ticketPriority = ticketPriorityRepository.findById(request.getPriorityId());
                 ticket.setPriority(ticketPriority.get());
@@ -119,42 +201,45 @@ public class TicketService {
         }
         ticket.setRequester(requester);
         if (status != null) {
+
             ticket.setStatus(status);
         } else {
             ticket.setStatus(ticketStatusRepository.findById(ModelTicketStatus.OPEN));
         }
-        //  ticket.setValid(request.getValid() == null ? true : request.getValid());
         ModelGroup group = ticket.getAssignedGroup();
         if (request.getAssignedGroupId() != null) {
             group = groupRepository.findById((int) request.getAssignedGroupId());
         }
         ticket.setAssignedGroup(group);
         ModelUser assignee = beanSession.getUser();
-        System.out.println("assignee: " + assignee.getUsername());
         if (request.getAssignedUserId() != null) {
             assignee = userRepository.findById(request.getAssignedUserId()).get();
         }
         ticket.setAssignedUser(assignee);
         if (request.getTags() != null && !request.getTags().isEmpty()) {
             tags = tag(request.getTags(), ticket);
-            //  ticket.setModelTags(tags);
         }
-        if(request.getTypeId()!= null ){
-        ticket.setTicketType(ticketTypeRepository.findById(request.getTypeId()).get());
+        if (request.getTypeId() != null) {
+            ticket.setTicketType(ticketTypeRepository.findById(request.getTypeId()).get());
+        } else {
+            ticket.setTicketType(ticketTypeRepository.findById((ModelTicketType.Problem)));
+
         }
-        if(request.getPriorityId()!= null ){
-        ticket.setPriority(ticketPriorityRepository.findById(request.getPriorityId()).get());
+        if (request.getPriorityId() != null) {
+            ticket.setPriority(ticketPriorityRepository.findById(request.getPriorityId()).get());
+        } else {
+            ticket.setPriority(ticketPriorityRepository.findById(ModelTicketPriority.Normal));
         }
         ModelTicketMessage message = null;
         if (request.getMessage() != null) {
-            System.out.println("message : " + request.getMessage());
+//            System.out.println("message : " + request.getMessage());
             message = new ModelTicketMessage();
             message.setDateCreation(new Date());
             message.setMessage(request.getMessage());
             message.setUser(beanSession.getUser());
             message.setTicket(ticket);
             message.setUseType(beanSession.getUser().getUserType());
-            if (beanSession.getUser().getUserType().getId() != ModelUserType.NewUser) {// 0 the index of the normal user 
+            if (beanSession.getUser().getUserType().getId() != ModelUserType.User) {// 0 the index of the normal user 
 
                 message.setInternal(request.getInternal());
             } else {
@@ -170,259 +255,196 @@ public class TicketService {
         return ticket;
     }
 
-    public ModelTicket updateTicket(Integer ticketId, RequestAddTicket newInfo) throws HelpDeskException {
-        ModelTicket ticket = ticketRepository.findById(ticketId).get();
-        return addOrEditTicket(ticket, newInfo);
-    }
-
-    public Set<ModelTag> tag(List<String> tags, ModelTicket ticket) {
-         System.out.println("ticket tags : "+tags);
-        Set<ModelTag> modelTags = new HashSet<>();
-        for (String Tag : tags) {
-            if (tagRepository.findByTag(Tag) == null) {
-                ModelTag tag = new ModelTag();
-                tag.setTag(Tag);
-                tag.setTicketId(ticket.getId());
-                System.out.println("ticket tags : "+tag);
-                tagRepository.save(tag);
-                modelTags.add(tag);
-            }
-        }
-        return modelTags;
-    }
-
-    public ModelTicket getTicket(Integer ticketId) {
+    public ModelTicket getTicket(Long ticketId) {
         return ticketRepository.findById(ticketId).get();
     }
 
-    public List<ModelTicket> allTickets() {
-        return ticketRepository.findAll();
+    public List<ModelTicket> userUnSolvedTickets(ModelUser user) {
+        return ticketRepository.findAllByStatusIdNotInAndAssignedGroupInAndAssignedUser(Arrays.asList(ModelTicketStatus.SOLVED, ModelTicketStatus.CLOSED, ModelTicketStatus.SUSPENDED), getUserGroupsId(user), beanSession.getUser());
     }
 
-    public List<ModelTicket> userUnSolvedTickets(ModelUser userId) {
-        return ticketRepository.findAllByStatusIdNotInAndAssignedUserAndAssignedGroupId(Arrays.asList(ModelTicketStatus.SOLVED, ModelTicketStatus.CLOSED, ModelTicketStatus.SUSPENDED), beanSession.getUser(), getUserGroupId());
+    public List<ModelTicket> unAssignedTickets(ModelUser user) {
+        return ticketRepository.findAllByStatusIdNotInAndAssignedGroupInAndAssignedUser(Arrays.asList(ModelTicketStatus.SOLVED, ModelTicketStatus.CLOSED, ModelTicketStatus.SUSPENDED), getUserGroupsId(user), null);
     }
 
-    public List<ModelTicket> unAssignedTickets() {
-        return ticketRepository.findAllByStatusIdNotInAndAssignedUserAndAssignedGroupId(Arrays.asList(ModelTicketStatus.SOLVED, ModelTicketStatus.CLOSED, ModelTicketStatus.SUSPENDED), null, getUserGroupId());
-    }
+    public List<ModelTicket> recTickets(List<Long> list) {
 
-    private static Date recentlyUpdated() {
-        Date date = new Date();
-        long MILLIS_IN_A_15MIN = 1000 * 60 * 15;
-
-        return new Date(date.getTime() - MILLIS_IN_A_15MIN);
-    }
-
-    public List<ModelTicket> unSolvedTickets() {
-        return ticketRepository.findAllByStatusIdNotInAndAssignedGroupId(Arrays.asList(ModelTicketStatus.SOLVED, ModelTicketStatus.CLOSED, ModelTicketStatus.SUSPENDED), getUserGroupId());
-    }
-
-    public List<ModelTicket> recTickets(Integer[] array) {
-
-        return ticketRepository.findAllByStatusIdNotInAndUpdatedGreaterThanEqual(Arrays.asList(array), recentlyUpdated());
+        return ticketRepository.findAllByStatusIdNotInAndUpdatedGreaterThanEqual(list, recentlyUpdated());
     }
 
     public List<ModelTicket> recUpdatedTickets() {
-        Integer[] c = {ModelTicketStatus.SOLVED, ModelTicketStatus.CLOSED, ModelTicketStatus.SUSPENDED};
-
-        return recTickets(c);
+        Long[] listOfStatus = {ModelTicketStatus.CLOSED, ModelTicketStatus.SOLVED, ModelTicketStatus.SUSPENDED};
+        List<Long> status = Arrays.asList(listOfStatus);
+        return recTickets(status);
     }
 
-    public Integer countRecUpdated() {
-        Integer[] a = {ModelTicketStatus.SOLVED, ModelTicketStatus.CLOSED, ModelTicketStatus.SUSPENDED};
-        return recTickets(a).size();
+    public int countRecUpdated() {
+        return recUpdatedTickets().size();
     }
 
-    public List<ModelTicket> allTicketsByStatusId(Integer statusId) {
-        return ticketRepository.findAllByStatusIdAndAssignedGroupId(statusId, getUserGroupId());
-    }
+    public List<ModelTicket> allTicketsByStatusId(RequestGetTicket getTicket, ModelUser beanUser) {
+        ModelUser user = beanSession.getUser();
+        if (user.getUserType().getId() != ModelUserType.User) {
+            if (getTicket.isOnlyMine()) {
+                if (getTicket.isRecently()) {
+                    return ticketRepository.findAllByStatusIdNotInAndAssignedGroupInAndAssignedUserAndUpdatedGreaterThanEqual(getTicket.getStatusIds(),
+                            getUserGroupsId(beanUser),
+                            user,
+                            recentlyUpdated());
+                }
+                return ticketRepository.findAllByStatusIdNotInAndAssignedGroupInAndAssignedUser(getTicket.getStatusIds(), getUserGroupsId(beanUser), user);
+            }
+            if (getTicket.isRecently()) {
+                return ticketRepository.findAllByStatusIdNotInAndAssignedGroupInAndUpdatedGreaterThanEqual(getTicket.getStatusIds(),
+                        getUserGroupsId(beanUser), recentlyUpdated());
+            }
 
-    public List<ModelTicket> suspendedTickets() {
-        return ticketRepository.findAllByStatusIdAndAssignedGroupId(ModelTicketStatus.SUSPENDED, getUserGroupId());
-    }
-
-    public List<ModelTicket> pendingTickets() {
-        return ticketRepository.findAllByStatusIdAndAssignedGroupId(ModelTicketStatus.PENDING, getUserGroupId());
-    }
-
-    public List<ModelTicket> solvedTickets() {
-        Integer[] b = {ModelTicketStatus.NEW, ModelTicketStatus.CLOSED, ModelTicketStatus.OPEN, ModelTicketStatus.PENDING, ModelTicketStatus.SUSPENDED};
-        return recTickets(b);
-    }
-
-    public List<ModelTicket> unSolvedGroupTickets(int groupId) {
-        return ticketRepository.findAllByAssignedGroupIdAndStatusIdNot(groupId, ModelTicketStatus.SOLVED);
-    }
-
-    public List<ModelTicket> deletedTickets() {
-        return ticketRepository.findAllByStatusIdAndAssignedGroupId(0, getUserGroupId());
-    }
-
-    public String deletedTicketsForever(Integer id) {
-        ticketRepository.deleteByIdAndAssignedGroupId(id, getUserGroupId());
-        return id + "";
-    }
-
-    public List<ModelTicketMessage> getTicketMessges(Integer id, Integer userId) {
-        if (userRepository.findById(userId).get().getUserType().getId() != 1) {
-            return ticketMessageRepository.findAllByticketIdOrderByDateCreationDesc(id);
-            //(id, getUserGroupId());
+            return ticketRepository.findAllByStatusIdNotInAndAssignedGroupIn(getTicket.getStatusIds(),
+                    getUserGroupsId(beanUser));
         }
-        return ticketMessageRepository.findAllByticketIdAndInternalNotOrderByDateCreationDesc(id, true);
+        return ticketRepository.findAllByStatusIdNotInAndRequester(getTicket.getStatusIds(), user);
     }
 
-    public List<Pair<Integer, String>> getLastMessages(Integer id, Integer userId) {
-        ModelTicket ticket = ticketRepository.findById(id).get();
-        List<Pair<Integer, String>> messages = new ArrayList<Pair<Integer, String>>();
-        Pair<Integer, String> mes1 = null;
-        Pair<Integer, String> mes2 = null;
-
-        if (ticket.getRequester().getId() == userId) {
-            mes1 = new Pair<Integer, String>(userId, getLastMessage(id, userId));
-            mes2 = new Pair<Integer, String>(ticket.getAssignedUser().getId(), getLastMessage(id, ticket.getAssignedUser().getId()));
-
-        } else {
-            mes1 = new Pair<Integer, String>(ticket.getAssignedUser().getId(), getLastMessage(id, ticket.getAssignedUser().getId()));
-            mes2 = new Pair<Integer, String>(userId, getLastMessage(id, userId));
-
-        }
-        messages.add(mes1);
-        messages.add(mes2);
-
-        return messages;
-    }
-
-    public String getLastMessage(Integer id, Integer userId) {
-        ModelUser user = userRepository.findById(id).get();
-        if (userRepository.findById(userId).get().getUserType().getId() != 1) {
-
-            return ticketMessageRepository.findTopByticketIdAndUserOrderByIdDesc(id, user).getMessage();
-            //(id, getUserGroupId());
-        }
-        return ticketMessageRepository.findTopByticketIdAndUserAndInternalNotOrderByIdDesc(id, user, true).getMessage();
-    }
-
-    public List<ModelTicket> groupDeletedTickets() {
-        return ticketRepository.findAllByStatusIdAndAssignedGroupId(0, getUserGroupId());
-    }
-
-    public Integer countRecSolved() {
+    public int countRecSolved() {
         return solvedTickets().size();
     }
 
-    public List<ModelTicket> newGroupTickets() {
-        return ticketRepository.findAllByAssignedGroupIdAndStatusId(getUserGroupId(), ModelTicketStatus.NEW);
-    }
-
-    public ModelTicket deleteTicket(Integer ticketId) {
+    public ModelTicket deleteTicket(Long ticketId) {
         Optional<ModelTicket> ticket = ticketRepository.findById(ticketId);
-        ticket.get().setStatus(ticketStatusRepository.findById(0));
+        ticket.get().setStatus(ticketStatusRepository.findById(ModelTicketStatus.CLOSED));
         ticket.get().setUpdated(new Date());
         ticket.get().setDeletedBy(beanSession.getUser());
         ticketRepository.save(ticket.get());
         return ticket.get();
     }
 
-    public ModelTicket undeleteTicket(Integer ticketId) {
-        Optional<ModelTicket> ticket = ticketRepository.findById(ticketId);
-        ticket.get().setStatus(ticketStatusRepository.findById(2));
-        ticket.get().setDeletedBy(null);
-        ticketRepository.save(ticket.get());
-        ModelUser user = ticket.get().getRequester();
+    public ModelTicket undeleteTicket(ModelTicket ticket) {
+        ticket.setStatus(ticketStatusRepository.findById(ModelTicketStatus.OPEN));
+        ticket.setDeletedBy(null);
+        ticketRepository.save(ticket);
+        ModelUser user = ticket.getRequester();
         user.setBlocked(false);
         userRepository.save(user);
-        return ticket.get();
+        return ticket;
     }
 
-    public Pair<ModelTicket, ModelUser> spamTicket(Integer ticketId) {
+    public BeanPair<ModelTicket, ModelUser> spamTicket(Long ticketId, ModelUser beanUser) {
         ModelTicket ticket = deleteTicket(ticketId);
         ModelUser user = ticket.getRequester();
         user.setBlocked(true);
         userRepository.save(user);
-        List<ModelTicket> tickets = ticketRepository.findAllByRequesterIdAndAssignedGroupId(user.getId(), getUserGroupId());
+        List<ModelTicket> tickets = ticketRepository.findAllByAssignedGroupInAndRequesterId(getUserGroupsId(beanUser), user.getId());
         for (ModelTicket t : tickets) {
             deleteTicket(t.getId());
         }
-        return new Pair<>(ticket, user);
+        return new BeanPair<>(ticket, user);
 
     }
 
-    public List<Pair<Integer, Integer>> countTickets() {
-        List<Object[]> countStatus = ticketRepository.countAllByStatusId(getUserGroupId());
-        System.out.println("check the output: "+countStatus.toString());
-        List<Object[]> countUnsolvedUnassigned = ticketRepository.countAllUnsolvedUnassigned(getUserId(), getUserGroupId());
-        Integer countrecupdated = countRecUpdated();
-        Integer countrecSolved = countRecSolved();
-        Integer countDeleted = 0;
-        Integer countPending = 0;
-        Integer countSuspended = 0;
-        Integer countNew = 0;
-        for (int i = 0; i < countUnsolvedUnassigned.size(); i++) {
-            Integer status = Integer.valueOf(String.valueOf(countStatus.get(i)[0]));
-            Integer value = Integer.valueOf(String.valueOf(countStatus.get(i)[0]));
-            System.out.println("status " + i + " " + status + " - value " + value);
+    public List<BeanPair<Long, Long>> countTickets(ModelUser beanUser) {
+        List<BeanPair<Long, Long>> countStatus = ticketRepository.countAllByStatusId(getUserGroupsId(beanUser));
+        for (BeanPair<Long, Long> i : countStatus) {
+            System.out.println(i.getFirst() + "  " + i.getSecond());
         }
-        //System.out.println("check what is this : " + Integer.valueOf(String.valueOf(countUnsolvedUnassigned.get(0)[0])));
-        List<Pair<Integer, Integer>> counter = new ArrayList<Pair<Integer, Integer>>();
-        for (int i = 0; i < 9; i++) {
+//        if (beanSession.getUser().getUserType().getId() == ModelUserType.Agent || beanSession.getUser().getUserType().getId() == ModelUserType.LightAgent) {
+//            List<Object[]> countUnsolvedUnassigned = ticketRepository.countAllUnsolvedUnassigned(getUserId(), getUserGroupsId().get(0).getId());
+//            return countStatus;
+//        }
+        return countStatus;
+    }
+//    public List<BeanPair<Long, Long>> countTickets() {
+//        if (beanSession.getUser().getUserType().getId() == ModelUserType.Agent || beanSession.getUser().getUserType().getId() == ModelUserType.LightAgent) {
+//            System.out.println(getUserGroupsId().toString());
+//            List<Object[]> countStatus = ticketRepository.countAllByStatusId(getUserGroupsId().get(0).getId());
+//            List<Object[]> countUnsolvedUnassigned = ticketRepository.countAllUnsolvedUnassigned(getUserId(), getUserGroupsId().get(0).getId());
+//            Long countrecupdated = countRecUpdated();
+//            Long countrecSolved = countRecSolved();
+//            Long countDeleted = 0;
+//            Long countPending = 0;
+//            Long countSuspended = 0;
+//            Long countNew = 0;
+//            for (int i = 0; i < countUnsolvedUnassigned.size(); i++) {
+//                Long status = Long.valueOf(String.valueOf(countStatus.get(i)[0]));
+//                Long value = Long.valueOf(String.valueOf(countStatus.get(i)[0]));
+//            }
+//            List<BeanPair<Long, Long>> counter = new ArrayList<>();
+//            for (int i = 0; i < 9; i++) {
+//
+//                BeanPair<Long, Long> countView = new BeanPair<Long, Long>(i, 0);
+//
+//                if (i < 3) {
+//                    countView.setSecond(Long.valueOf(String.valueOf(countUnsolvedUnassigned.get(0)[i])));
+//                } else if (i == 3) {
+//                    countView.setSecond(countrecupdated);
+//                    countPending = Long.valueOf(String.valueOf(countStatus.get(i)[1]));
+//
+//                }
+//                if (i < countStatus.size()) {
+//                    int status = Long.valueOf(String.valueOf(countStatus.get(i)[0]));
+//                    if (status == 0) {
+//                        countDeleted = Long.valueOf(String.valueOf(countStatus.get(i)[1])) - 1;
+//                    } else if (status == 1) {
+//                        countNew = Long.valueOf(String.valueOf(countStatus.get(i)[1]));
+//                    } else if (status == 3) {
+//                        countSuspended = Long.valueOf(String.valueOf(countStatus.get(i)[1]));
+//                    } else if (status == 5) {
+//                        countSuspended = Long.valueOf(String.valueOf(countStatus.get(i)[1]));
+//                    }
+//                }
+//                counter.add(countView);
+//            }
+//            counter.get(4).setSecond(countNew); 
+//            counter.get(5).setSecond(countPending);
+//            counter.get(6).setSecond(countrecSolved);
+//            counter.get(7).setSecond(countSuspended);
+//            counter.get(8).setSecond(countDeleted);;
+//            return counter;
+//        }
+//        return null;
+//    }
+////////// for deletion
 
-            Pair<Integer, Integer> countView = new Pair<Integer, Integer>(i, 0);
+    public List<ModelTicket> suspendedTickets(ModelUser beanUser) {
+        return ticketRepository.findAllByAssignedGroupInAndStatusId(getUserGroupsId(beanUser), ModelTicketStatus.SUSPENDED);
+    }
+    /////////// for deletion
 
-            if (i < 3) {
-                countView.second = Integer.valueOf(String.valueOf(countUnsolvedUnassigned.get(0)[i]));
-            } else if (i == 3) {
-                countView.second = countrecupdated;
-                countPending = Integer.valueOf(String.valueOf(countStatus.get(i)[1]));
-
-            }
-            if (i < countStatus.size()) {
-                int status = Integer.valueOf(String.valueOf(countStatus.get(i)[0]));
-                if(status == 0){
-                    countDeleted = Integer.valueOf(String.valueOf(countStatus.get(i)[1]))-1;
-                } else if (status == 1) {
-                    countNew = Integer.valueOf(String.valueOf(countStatus.get(i)[1]));
-                } else if (status == 3) {
-                    countSuspended = Integer.valueOf(String.valueOf(countStatus.get(i)[1]));
-                } else if (status == 5) {
-                    countSuspended = Integer.valueOf(String.valueOf(countStatus.get(i)[1]));
-                }
-            }
-            counter.add(countView);
-        }
-        counter.get(4).second = countNew;
-        counter.get(5).second = countPending;
-        counter.get(6).second = countrecSolved;
-        counter.get(7).second = countSuspended;
-        counter.get(8).second = countDeleted;
-        return counter;
+    public List<ModelTicket> pendingTickets(ModelUser beanUser) {
+        return ticketRepository.findAllByAssignedGroupInAndStatusId(getUserGroupsId(beanUser), ModelTicketStatus.PENDING);
     }
 
-    public ModelTicket mergeTicketsInto(Integer id, List<Integer> ticketsIds) {
-        ModelTicket ticket = ticketRepository.findById(id).get();
-        ModelUser assignee = ticket.getAssignedUser();
-        String deleteddIds = "";
-        for (Integer ticketId : ticketsIds) {
-            String DELETED = deletedTicketsForever(ticketId);
-            deleteddIds += " #" + ticketId + ",";
-        }
-        ModelTicketMessage message = null;
-        message = new ModelTicketMessage();
-        message.setDateCreation(new Date());
-        message.setMessage("Requests " + deleteddIds + " were closed and merged into this request");
-        message.setUser(beanSession.getUser());
-        message.setTicket(ticket);
-        message.setUseType(beanSession.getUser().getUserType());
-
-        message.setInternal(Boolean.FALSE);
-//        RequestMessageTicket requestMessageTicket = new RequestMessageTicket();
-//        requestMessageTicket.setMessage(request.getMessage());
-//        requestMessageTicket.setRequesterId(ticket.getRequester().getId());
-//        requestMessageTicket.setSubject(ticket.getSubject());
-        messageRepository.save(message);
-
-//    ticketRepository.save (ticket);
-        return ticket;
+    //////////// for deletion
+    public List<ModelTicket> statusTickets(Long statusId, ModelUser beanUser) {
+        return ticketRepository.findAllByAssignedGroupInAndStatusId(getUserGroupsId(beanUser), statusId);
     }
+    //////////////////// for deletion
 
-}
+    public List<ModelTicket> solvedTickets() {
+        Long[] b = {ModelTicketStatus.NEW, ModelTicketStatus.CLOSED, ModelTicketStatus.OPEN, ModelTicketStatus.PENDING, ModelTicketStatus.SUSPENDED};
+        List<Long> status = Arrays.asList(b);
+
+        return recTickets(status);
+    }
+////////////// for deletion
+
+    public List<ModelTicket> unSolvedGroupTickets(int groupId) {
+        return ticketRepository.findAllByAssignedGroupAndStatusIdNot(groupId, ModelTicketStatus.SOLVED);
+    }
+/////////// for deletion
+
+    public List<ModelTicket> deletedTickets(ModelUser user) {
+        return ticketRepository.findAllByAssignedGroupInAndStatusId(getUserGroupsId(user), ModelTicketStatus.CLOSED);
+    }
+/////////////
+
+    public List<ModelTicket> unSolvedTickets(ModelUser user) {
+        return ticketRepository.findAllByStatusIdNotInAndAssignedGroupIn(Arrays.asList(ModelTicketStatus.SOLVED, ModelTicketStatus.CLOSED, ModelTicketStatus.SUSPENDED), getUserGroupsId(user));
+    }
+    //////////for deletion
+
+    public List<ModelTicket> newGroupTickets(ModelUser user) {
+        return ticketRepository.findAllByAssignedGroupInAndStatusId(getUserGroupsId(user), ModelTicketStatus.NEW);
+    }
+///////
+
+}*/

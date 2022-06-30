@@ -23,21 +23,23 @@ public class ModelGroup {
     public static final int Default = 0;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private Long id;
 
     @Column
     private String name;
+    @Column
+    private String jid;
     @ManyToOne
     private ModelCompany company;
 
     @OneToMany(mappedBy = "group")
     List<ModelUserGroup> user;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -63,6 +65,14 @@ public class ModelGroup {
 
     public void setUser(List<ModelUserGroup> user) {
         this.user = user;
+    }
+
+    public String getJid() {
+        return jid;
+    }
+
+    public void setJid(String jid) {
+        this.jid = jid;
     }
 
 }

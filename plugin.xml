@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin>
+   <class>com.tecfrac.helpdesk.openfire.DeskPlugin</class>
+   <name>HelpDesk</name>
+   <description>Help Me</description>
+   <author>Ali Moussawi And Mohamad el cheikhali</author>
+   <version>0.0.1-SNAPSHOT</version>
+   <date>08/05/2022</date>
+   <minServerVersion>4.0.0</minServerVersion>
+    <!-- And if it won't work after:
+   <maxServerVersion>4.3.0</maxServerVersion>
+   -->
+
+   <adminconsole>
+      <tab id="tab-server">
+         <sidebar id="sidebar-server-settings">
+            <item id="helpdesk-plugin-page" name="Helpdesk Plugin Properties" url="helpdesk-page.jsp" description="Settings for Example Plugin" />
+         </sidebar>
+      </tab>
+   </adminconsole>
+</plugin>

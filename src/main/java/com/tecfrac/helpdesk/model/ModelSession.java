@@ -24,7 +24,7 @@ public class ModelSession {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn
     private ModelUser user;
 
     @Column(name = "token")

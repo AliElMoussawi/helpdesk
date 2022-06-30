@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @CrossOrigin
 @Controller
@@ -31,8 +32,7 @@ public class UserController {
     public ResponseEntity<ModelUser> createUser(@RequestBody AddUser request) throws Exception {
         String regexPattern = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
         if (Pattern.compile(regexPattern).matcher(request.getEmail()).matches()) {
-            ModelUser newUser = userService.addUser(request);
-            System.out.println("add new user :" + newUser + "\n" + "request:" + request);
+            ModelUser newUser = userService.addUser(request, beanSession.getUser());
             if (newUser == null) {
                 return new ResponseEntity<>(newUser, HttpStatus.ALREADY_REPORTED);
             }
@@ -42,14 +42,9 @@ public class UserController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/")
-    public ResponseEntity<List<PairUserInfo<String, Integer, String>>> allUsers() throws Exception {
-        List<PairUserInfo<String, Integer, String>> allUsers = userService.allUsers();
+    public ResponseEntity<List<PairUserInfo<String, Integer, String>>> allUsers(@RequestParam(value = "userType", required = false) Integer userType) throws Exception {
+        List<PairUserInfo<String, Integer, String>> allUsers = userService.getUsers(userType, beanSession.getUser());
         return new ResponseEntity<>(allUsers, HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/allagents")
-    public ResponseEntity<List<PairUserInfo<String, Integer, String>>> allAgents() throws Exception {
-        List<PairUserInfo<String, Integer, String>> allAgents = userService.allAgents();
-        return new ResponseEntity<>(allAgents, HttpStatus.OK);
-    }
 }

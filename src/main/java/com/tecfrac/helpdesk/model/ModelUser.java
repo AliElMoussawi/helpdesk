@@ -9,17 +9,17 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
 @Entity
 @Table(name = "user")
 public class ModelUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private Long id;
 
     @OneToOne
     private ModelUserType userType;
-
     @Column(unique = true)
     private String username;
     @Column(unique = true)
@@ -34,15 +34,15 @@ public class ModelUser {
     public ModelUser() {
     }
 
-    public ModelUser(Integer id) {
+    public ModelUser(Long id) {
         this.id = id;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -84,6 +84,11 @@ public class ModelUser {
 
     public void setCompany(ModelCompany company) {
         this.company = company;
+    }
+
+    @Override
+    public String toString() {
+        return "ModelUser{" + "id=" + id + ", userType=" + userType + ", username=" + username + ", email=" + email + ", blocked=" + blocked + ", company=" + company + '}';
     }
 
 }

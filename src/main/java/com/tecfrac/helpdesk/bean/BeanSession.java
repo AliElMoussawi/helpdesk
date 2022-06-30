@@ -2,6 +2,7 @@ package com.tecfrac.helpdesk.bean;
 
 import com.tecfrac.helpdesk.model.*;
 import java.util.Date;
+import java.util.Objects;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -15,7 +16,6 @@ import org.springframework.web.context.WebApplicationContext;
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class BeanSession {
 
-    // @Value("${id}")
     private Integer id;
 
     private ModelUser user;
@@ -74,6 +74,28 @@ public class BeanSession {
 
     public void setValid(Boolean valid) {
         this.valid = valid;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 37 * hash + Objects.hashCode(this.id);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final BeanSession other = (BeanSession) obj;
+        return Objects.equals(this.id, other.id);
     }
 
 }

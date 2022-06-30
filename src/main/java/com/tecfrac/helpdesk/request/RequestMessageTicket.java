@@ -7,30 +7,31 @@ public class RequestMessageTicket {
 
     private String subject;
 
-    private Integer statusId;
+    private Long statusId;
 
-    private Integer requesterId;
+    private Long requesterId;
 
-    private Integer ccId;
-  
+    private Long ccId;
+
     private String message;
-    private Integer sendfrom;
+    private Long sendfrom;
 
-    public Integer getCcId() {
+    public Long getCcId() {
         return ccId;
     }
 
-    public void setCcId(Integer ccId) {
+    public void setCcId(Long ccId) {
         this.ccId = ccId;
     }
 
-    public Integer getSendfrom() {
+    public Long getSendfrom() {
         return sendfrom;
     }
 
-    public void setSendfrom(Integer sendfrom) {
+    public void setSendfrom(Long sendfrom) {
         this.sendfrom = sendfrom;
     }
+
     public String getSubject() {
         return subject;
     }
@@ -39,27 +40,27 @@ public class RequestMessageTicket {
         this.subject = subject;
     }
 
-    public Integer getStatusId() {
+    public Long getStatusId() {
         return statusId;
     }
 
-    public void setStatusId(Integer statusId) {
+    public void setStatusId(Long statusId) {
         this.statusId = statusId;
     }
 
-    public Integer getRequesterId() {
+    public Long getRequesterId() {
         return requesterId;
     }
 
-    public void setRequesterId(Integer requesterId) {
+    public void setRequesterId(Long requesterId) {
         this.requesterId = requesterId;
     }
 
-    public Integer getccId() {
+    public Long getccId() {
         return ccId;
     }
 
-    public void setccId(Integer ccId) {
+    public void setccId(Long ccId) {
         this.ccId = ccId;
     }
 

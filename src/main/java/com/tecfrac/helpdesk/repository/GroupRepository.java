@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface GroupRepository extends JpaRepository<ModelGroup, Integer> {
+public interface GroupRepository extends JpaRepository<ModelGroup, Long> {
 
     @Override
     List<ModelGroup> findAll();
@@ -19,7 +19,7 @@ public interface GroupRepository extends JpaRepository<ModelGroup, Integer> {
 
     ModelGroup findByName(String groupName);
 
-    public ModelGroup findByNameAndCompanyId(String support, Integer id);
+    public ModelGroup findByNameAndCompanyId(String support, Long id);
 
-    public List<ModelGroup> findAllByCompanyId(Integer id);
+    public List<ModelGroup> findAllByCompanyId(Long id);
 }

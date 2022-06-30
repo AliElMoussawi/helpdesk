@@ -4,7 +4,6 @@
  */
 package com.tecfrac.helpdesk.service;
 
-import com.tecfrac.helpdesk.bean.BeanSession;
 import com.tecfrac.helpdesk.model.ModelCompany;
 import com.tecfrac.helpdesk.repository.CompanyRepository;
 import com.tecfrac.helpdesk.repository.UserRepository;
@@ -15,8 +14,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class CompanyService {
 
-    @Autowired
-    private BeanSession beanSession;
     @Autowired
     private CompanyRepository companyRepository;
     @Autowired

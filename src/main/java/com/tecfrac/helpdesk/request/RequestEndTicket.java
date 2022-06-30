@@ -11,37 +11,24 @@ import java.util.Date;
  * @author CLICK ONCE
  */
 public class RequestEndTicket {
-    
-    
-    private String token ;
+
+    private String token;
     private Date EndingDate;
 
-    /**
-     * @return the token
-     */
     public String getToken() {
         return token;
     }
 
-    /**
-     * @param token the token to set
-     */
     public void setToken(String token) {
         this.token = token;
     }
 
-    /**
-     * @return the EndingDate
-     */
     public Date getEndingDate() {
         return EndingDate;
     }
 
-    /**
-     * @param EndingDate the EndingDate to set
-     */
     public void setEndingDate(Date EndingDate) {
         this.EndingDate = EndingDate;
     }
-    
- }
+
+}

@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  *
  * @author CLICK ONCE
  */
-public interface TicketStatusRepository extends JpaRepository<ModelTicketStatus, Integer> {
+public interface TicketStatusRepository extends JpaRepository<ModelTicketStatus, Long> {
 
     public ModelTicketStatus findById(int statusId);
 

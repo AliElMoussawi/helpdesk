@@ -6,14 +6,14 @@ import java.util.List;
 public class RequestGroupsUsers {
 
     private String name;
-    private Integer id;
-    private List<PairUserInfo<String, Integer, String>> user;
+    private Long id;
+    private List<PairUserInfo<String, Long, String>> user;
 
-    public List<PairUserInfo<String, Integer, String>> getUser() {
+    public List<PairUserInfo<String, Long, String>> getUser() {
         return user;
     }
 
-    public void setUser(List<PairUserInfo<String, Integer, String>> user) {
+    public void setUser(List<PairUserInfo<String, Long, String>> user) {
         this.user = user;
     }
 
@@ -25,11 +25,11 @@ public class RequestGroupsUsers {
         this.name = name;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

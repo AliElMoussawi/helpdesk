@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TicketPriorityRepository extends JpaRepository<ModelTicketPriority, Integer> {
+public interface TicketPriorityRepository extends JpaRepository<ModelTicketPriority, Long> {
 
-    ModelTicketPriority findById(long id);
+    ModelTicketPriority findById(int id);
 }

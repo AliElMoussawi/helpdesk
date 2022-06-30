@@ -15,13 +15,14 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "user_type")
 public class ModelUserType {
- public static final int NewUser=1;
-public static final int Agent=2;
-public static final int Administrator=3;
-public static final int LightAgent=4;
+
+    public static final int User = 1;
+    public static final int Agent = 2;
+    public static final int Administrator = 3;
+    public static final int LightAgent = 4;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private Long id;
 
     @Column
     private String name;
@@ -36,11 +37,11 @@ public static final int LightAgent=4;
         this.category = category;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

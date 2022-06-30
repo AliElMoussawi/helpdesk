@@ -1,5 +1,6 @@
 package com.tecfrac.helpdesk.service;
 
+import com.tecfrac.helpdesk.bean.BeanPair;
 import com.tecfrac.helpdesk.bean.BeanSession;
 import com.tecfrac.helpdesk.exception.HelpDeskException;
 import com.tecfrac.helpdesk.model.ModelSession;
@@ -30,64 +31,42 @@ public class AuthenticationService {
     private UserPasswordRepository userpasswordRepository;
     @Autowired
     private SessionRepository sessionRepository;
-    @Autowired
-    private BeanSession beanSession;
-    @Autowired
-    private EmailService emailService;
 
-    public static class Pair<T, S> {
-
-        T first;
-        S second;
-
-        public Pair(T first, S second) {
-            this.first = first;
-            this.second = second;
+    public ModelSession login(RequestLogin request, BeanSession beanSession) throws HelpDeskException {
+        BeanPair<ModelUser, ModelUserPassword> login = checkPassword(request.getUsername(), request.getPassword());
+        if (login.getFirst().isBlocked()) {
+            throw new HelpDeskException(HttpStatus.PRECONDITION_FAILED, "this user is Blocked ");
         }
-
-        public T getFirst() {
-            return first;
-        }
-
-        public S getSecond() {
-            return second;
-        }
-    }
-
-    public ModelSession login(RequestLogin request) throws HelpDeskException {
-        Pair<ModelUser, ModelUserPassword> login = checkPassword(request.getUsername(), request.getPassword());
         ModelSession session = new ModelSession();
-        session.setUser(login.first);
+        session.setUser(login.getFirst());
         session.setDateCreation(new Date());
         session.setValid(true);
         session.setToken(UUID.randomUUID().toString());
         sessionRepository.save(session);
-        beanSession.setUser(login.first);
-        System.out.println("session id after login:" + session.getId());
+        beanSession.setUser(login.getFirst());
         beanSession.setToken(session.getToken());
         beanSession.setId(session.getId());
-        System.out.println("session id after set bean " + beanSession.getId());
         beanSession.setValid(true);
         return session;
     }
 
-    private Pair<ModelUser, ModelUserPassword> checkPassword(@RequestParam(required = true) String username, @RequestParam(required = true) String password) throws HelpDeskException {
+    private BeanPair<ModelUser, ModelUserPassword> checkPassword(@RequestParam(required = true) String username, @RequestParam(required = true) String password) throws HelpDeskException {
         ModelUser userData = userRepository.findByUsername(username);
-        ModelUserPassword passowrdModel = null;
+        ModelUserPassword passwordModel = null;
         if (userData == null) {
             throw new HelpDeskException(HttpStatus.UNAUTHORIZED, "Invalid username or password: ");
         }
-        passowrdModel = userpasswordRepository.findTopByUserIdAndValid(userData.getId(), true);
-        if (passowrdModel == null) {
+        passwordModel = userpasswordRepository.findTopByUserIdAndValid(userData.getId(), true);
+        if (passwordModel == null) {
             throw new HelpDeskException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
         }
-        if (!(passowrdModel.getPassword()).equals(HashingUtil.hashString(password))) {
+        if (!(passwordModel.getPassword()).equals(HashingUtil.hashString(password))) {
             throw new HelpDeskException(HttpStatus.UNAUTHORIZED, "Invalid username or password: ");
         }
-        if (passowrdModel.getDateExpired() != null && passowrdModel.getDateExpired().before(new Date())) {
+        if (passwordModel.getDateExpired() != null && passwordModel.getDateExpired().before(new Date())) {
             throw new HelpDeskException(HttpStatus.FORBIDDEN, "Password Expired");
         }
-        Pair<ModelUser, ModelUserPassword> a = new Pair<>(userData, passowrdModel);
+        BeanPair<ModelUser, ModelUserPassword> a = new BeanPair<>(userData, passwordModel);
         return a;
     }
 
@@ -96,27 +75,21 @@ public class AuthenticationService {
         if (request.getNewPassword() == null || request.getNewPassword().isBlank()) {
             throw new HelpDeskException(HttpStatus.BAD_REQUEST, "new password is empty!");
         }
-        Pair<ModelUser, ModelUserPassword> login = checkPassword(request.getUsername(), request.getPassword());
-        //setValid(boolean valid)
-        //ModelSession update_session = new ModelSession();
-        login.second.setValid(false);
-        login.second.setDateExpired(new Date());
-        userpasswordRepository.save(login.second);
+        BeanPair<ModelUser, ModelUserPassword> login = checkPassword(request.getUsername(), request.getPassword());
+        login.getSecond().setValid(false);
+        login.getSecond().setDateExpired(new Date());
+        userpasswordRepository.save(login.getSecond());
         ModelUserPassword password = new ModelUserPassword();
         password.setPassword(HashingUtil.hashString(request.getNewPassword()));
         password.setDateCreation(new Date());
-        password.setUserId(login.first.getId());
+        password.setUserId(login.getFirst().getId());
         password.setValid(true);
         userpasswordRepository.save(password);
 
-        return login.first;
+        return login.getFirst();
     }
 
-    public static void main(String[] args) {
-        System.out.print(HashingUtil.hashString("test1"));
-    }
-
-    public ModelSession signOut(int sessionId) throws HelpDeskException {
+    public ModelSession signOut(int sessionId, BeanSession beanSession) throws HelpDeskException {
         Optional<ModelSession> session = sessionRepository.findById(sessionId);
         if (session.isEmpty()) {
             throw new HelpDeskException(HttpStatus.BAD_REQUEST, "Bad Request");
@@ -132,17 +105,17 @@ public class AuthenticationService {
     public SimpleMailMessage forgetPassword(String email) {
         ModelUser user = userRepository.findByEmail(email);
         if (user != null) {
-            RequestMessageTicket resetEmail = new RequestMessageTicket();
-            String appUrl = "http://192.168.3.25:8080/auth/resetPassword";
-            resetEmail.setMessage("To reset your password, click the link below:\n" + appUrl);
-            resetEmail.setSubject("RESET PASSWORD");
-            resetEmail.setRequesterId(user.getId());
-            return emailService.sendMail(resetEmail);
+//            RequestMessageTicket resetEmail = new RequestMessageTicket();
+//            String appUrl = "http://192.168.3.25:8080/auth/resetPassword";
+//            resetEmail.setMessage("To reset your password, click the link below:\n" + appUrl);
+//            resetEmail.setSubject("RESET PASSWORD");
+//            resetEmail.setRequesterId(user.getId());
+//            return emailService.sendMail(resetEmail);
         }
         return null;
     }
 
-    public SimpleMailMessage resetPassword(String email, String newPassword) throws Exception {
+    public SimpleMailMessage resetPassword(String email, String newPassword, BeanSession beanSession) throws Exception {
         ModelUser user = userRepository.findByEmail(email);
         if (user != null) {
 
@@ -158,7 +131,7 @@ public class AuthenticationService {
                 resetEmail.setSubject("PASSWORD SUCCESSFULLY CHANGED");
                 resetEmail.setRequesterId(user.getId());
                 resetEmail.setSendfrom(beanSession.getUser().getCompany().getId());
-                return emailService.sendMail(resetEmail);
+//                return emailService.sendMail(resetEmail);
             }
             return null;
         }

@@ -30,7 +30,7 @@ public class ModelTicket {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private Long id;
 
     @Column
     private String subject;
@@ -61,7 +61,7 @@ public class ModelTicket {
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Column
     private Date requested;
-    @JsonFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @Column
     private Date updated;
 
@@ -94,11 +94,11 @@ public class ModelTicket {
         this.deletedBy = deletedBy;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

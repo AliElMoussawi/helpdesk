@@ -24,8 +24,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class CompanyController {
 
     @Autowired
-    BeanSession beanSession;
-    @Autowired
     CompanyService companyService;
 
     @RequestMapping(method = RequestMethod.POST, value = "/")

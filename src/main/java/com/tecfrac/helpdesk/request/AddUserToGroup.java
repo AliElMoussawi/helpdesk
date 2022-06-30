@@ -2,22 +2,22 @@ package com.tecfrac.helpdesk.request;
 
 public class AddUserToGroup {
 
-    Integer userId;
-    Integer companyId;
+    Long userId;
+    Long companyId;
 
-    public Integer getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
-    public Integer getCompanyId() {
+    public Long getCompanyId() {
         return companyId;
     }
 
-    public void setCompanyId(Integer companyId) {
+    public void setCompanyId(Long companyId) {
         this.companyId = companyId;
     }
 

@@ -7,11 +7,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserGroupRepository extends JpaRepository<ModelUserGroup, Integer> {
+public interface UserGroupRepository extends JpaRepository<ModelUserGroup, Long> {
 
-    List<ModelUser> findAllByGroupId(Integer groupId);
+    List<ModelUser> findAllByGroupId(Long groupId);
 
     ModelUserGroup findById(long id);
 
-    ModelUserGroup findByUserId(Integer id);
+    ModelUserGroup findByUserId(Long id);
 }

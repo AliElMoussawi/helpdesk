@@ -51,13 +51,13 @@ public class GroupController {
 
     @RequestMapping(method = RequestMethod.GET, value = "")
     public ResponseEntity<List<RequestGroupsUsers>> allgroups() throws Exception {
-        List<RequestGroupsUsers> allgroups = groupService.findAll();
+        List<RequestGroupsUsers> allgroups = groupService.findAll(beanSession.getUser());
         return new ResponseEntity<>(allgroups, HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/AddUserToGroup")
     public ResponseEntity<ModelUserGroup> addUserGroup(@RequestBody AddUserToGroup request) throws Exception {
-        Boolean isStaff = userRepository.findById(request.getUserId()).get().getUserType().getId() != ModelUserType.NewUser;
+        Boolean isStaff = userRepository.findById(request.getUserId()).get().getUserType().getId() != ModelUserType.User;
         ModelUserGroup addedUser = null;
         if (beanSession.getUser().getUserType().getId() == ModelUserType.Administrator && isStaff) {
             addedUser = groupService.addUserGroup(request.getUserId(), request.getCompanyId());

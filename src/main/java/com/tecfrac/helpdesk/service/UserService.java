@@ -22,8 +22,6 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     @Autowired
-    private BeanSession beanSession;
-    @Autowired
     private UserRepository userRepository;
     @Autowired
     private UserGroupRepository userGroupRepository;
@@ -36,7 +34,7 @@ public class UserService {
     @Autowired
     private AuthenticationService authenticationService;
 
-    public ModelUser addUser(AddUser userInfo) {
+    public ModelUser addUser(AddUser userInfo, ModelUser beanUser) {
         boolean exist1 = userRepository.findByEmail(userInfo.getEmail()) == null;
         boolean exist2 = userRepository.findByUsername(userInfo.getUsername()) == null;
         boolean exist3 = companyRepository.findByEmail(userInfo.getEmail()) == null;
@@ -46,16 +44,15 @@ public class UserService {
             user.setUsername(userInfo.getUsername());
             Optional<ModelUserType> userType = userTypeRepository.findById(userInfo.getCategory());
             user.setUserType(userType.get());
-            user.setCompany(beanSession.getUser().getCompany());
+            user.setCompany(beanUser.getCompany());
 
             ModelUserGroup userGr = new ModelUserGroup();
-            if (((int) userInfo.getCategory()) != ModelUserType.NewUser) {
+            if (((int) userInfo.getCategory()) != ModelUserType.User) {
 
-                userGr.setGroup(groupRepository.findByNameAndCompanyId("Support", beanSession.getUser().getCompany().getId()));
+                userGr.setGroup(groupRepository.findByNameAndCompanyId("Support", beanUser.getCompany().getId()));
                 userGr.setUser(user);
                 userGroupRepository.save(userGr);
             }
-            System.out.println("user : " + user);
             userRepository.save(user);
             return user;
         }
@@ -63,8 +60,8 @@ public class UserService {
 
     }
 
-    public List<PairUserInfo<String, Integer, String>> allUsers() {
-        List<ModelUser> modelUser = userRepository.findAllByCompany(beanSession.getUser().getCompany());
+    public List<PairUserInfo<String, Integer, String>> getUsers(Integer userType, ModelUser beanUser) {
+        List<ModelUser> modelUser = userRepository.findAllByCompany(beanUser.getCompany());
         List<PairUserInfo<String, Integer, String>> allUsers = new ArrayList<>();
         for (ModelUser user : modelUser) {
             PairUserInfo<String, Integer, String> modeluser = new PairUserInfo(user.getUsername(), user.getId(), user.getEmail());
@@ -72,16 +69,4 @@ public class UserService {
         }
         return allUsers;
     }
-
-    public List<PairUserInfo<String, Integer, String>> allAgents() {
-        Integer a[] = new Integer[]{1};
-        List<ModelUser> modelUser = userRepository.findAllByUserTypeIdNotInAndCompany(Arrays.asList(a), beanSession.getUser().getCompany());
-        List<PairUserInfo<String, Integer, String>> agents = new ArrayList<>();
-        for (ModelUser user : modelUser) {
-            PairUserInfo<String, Integer, String> modeluser = new PairUserInfo(user.getUsername(), user.getId(), user.getEmail());
-            agents.add(modeluser);
-        }
-        return agents;
-    }
-
 }

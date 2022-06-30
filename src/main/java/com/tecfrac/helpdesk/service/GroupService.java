@@ -4,7 +4,6 @@
  */
 package com.tecfrac.helpdesk.service;
 
-import com.tecfrac.helpdesk.bean.BeanSession;
 import com.tecfrac.helpdesk.model.ModelGroup;
 import com.tecfrac.helpdesk.model.ModelUser;
 import com.tecfrac.helpdesk.model.ModelUserGroup;
@@ -23,8 +22,6 @@ import com.tecfrac.helpdesk.service.GroupService.PairUserInfo;
 public class GroupService {
 
     @Autowired
-    private BeanSession beanSession;
-    @Autowired
     private CompanyRepository companyRepository;
     @Autowired
     private GroupRepository groupRepository;
@@ -33,7 +30,7 @@ public class GroupService {
     @Autowired
     private UserRepository userRepository;
 
-    public ModelGroup addGroup(Integer companyId, String groupName) {
+    public ModelGroup addGroup(Long companyId, String groupName) {
         ModelGroup groupExist = groupRepository.findByName(groupName);
         if (groupExist == null) {
             ModelGroup newGroup = new ModelGroup();
@@ -46,17 +43,17 @@ public class GroupService {
         return null;
     }
 
-    public List<RequestGroupsUsers> findAll() {
+    public List<RequestGroupsUsers> findAll(ModelUser beanUser) {
         List<RequestGroupsUsers> object = new ArrayList<RequestGroupsUsers>();
-        List<ModelGroup> result = groupRepository.findAllByCompanyId(beanSession.getUser().getCompany().getId());
+        List<ModelGroup> result = groupRepository.findAllByCompanyId(beanUser.getCompany().getId());
         for (ModelGroup modelGroup : result) {
             RequestGroupsUsers e = new RequestGroupsUsers();
             e.setName(modelGroup.getName());
             e.setId(modelGroup.getId());
-            List<PairUserInfo<String, Integer, String>> groupusers = new ArrayList<PairUserInfo<String, Integer, String>>();
-            System.out.println(modelGroup.getUser().size());
+            List<PairUserInfo<String, Long, String>> groupusers = new ArrayList<PairUserInfo<String, Long, String>>();
+
             for (ModelUserGroup modelUserGroup : modelGroup.getUser()) {
-                PairUserInfo<String, Integer, String> user = new PairUserInfo(modelUserGroup.getUser().getUsername(), modelUserGroup.getUser().getId(), modelUserGroup.getUser().getEmail());
+                PairUserInfo<String, Long, String> user = new PairUserInfo(modelUserGroup.getUser().getUsername(), modelUserGroup.getUser().getId(), modelUserGroup.getUser().getEmail());
                 groupusers.add(user);
             }
             e.setUser(groupusers);
@@ -65,7 +62,7 @@ public class GroupService {
         return object;
     }
 
-    public ModelUserGroup addUserGroup(Integer groupId, Integer userId) {
+    public ModelUserGroup addUserGroup(Long groupId, Long userId) {
         ModelGroup groupExist = groupRepository.findById(groupId).get();
         ModelUser userExist = userRepository.findById(userId).get();
         if (groupExist != null && userExist != null) {

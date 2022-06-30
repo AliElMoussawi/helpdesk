@@ -4,17 +4,35 @@ import java.util.List;
 
 public class RequestAddTicket {
 
+    private Long id;
     private String subject;
-    private Integer statusId;
-    private Integer requesterId;
-    private Integer assignedUserId;
-    private Integer assignedGroupId;
-    private Integer priorityId;
-    private Integer typeId;
+    private Long statusId;
+    private Long requesterId;
+    private Long assignedUserId;
+    private Long assignedGroupId;
+    private Long priorityId;
+    private Long typeId;
     private List<String> tags;
     private String message;
     private Boolean valid;
     private Boolean internal;
+    private Boolean delete;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Boolean getDelete() {
+        return delete;
+    }
+
+    public void setDelete(Boolean delete) {
+        this.delete = delete;
+    }
 
     public String getSubject() {
         return subject;
@@ -24,51 +42,51 @@ public class RequestAddTicket {
         this.subject = subject;
     }
 
-    public Integer getStatusId() {
+    public Long getStatusId() {
         return statusId;
     }
 
-    public void setStatusId(Integer statusId) {
+    public void setStatusId(Long statusId) {
         this.statusId = statusId;
     }
 
-    public Integer getRequesterId() {
+    public Long getRequesterId() {
         return requesterId;
     }
 
-    public void setRequesterId(Integer requesterId) {
+    public void setRequesterId(Long requesterId) {
         this.requesterId = requesterId;
     }
 
-    public Integer getAssignedUserId() {
+    public Long getAssignedUserId() {
         return assignedUserId;
     }
 
-    public void setAssignedUserId(Integer assignedUserId) {
+    public void setAssignedUserId(Long assignedUserId) {
         this.assignedUserId = assignedUserId;
     }
 
-    public Integer getAssignedGroupId() {
+    public Long getAssignedGroupId() {
         return assignedGroupId;
     }
 
-    public void setAssignedGroupId(Integer assignedGroupId) {
+    public void setAssignedGroupId(Long assignedGroupId) {
         this.assignedGroupId = assignedGroupId;
     }
 
-    public Integer getPriorityId() {
+    public Long getPriorityId() {
         return priorityId;
     }
 
-    public void setPriorityId(Integer priortiyId) {
+    public void setPriorityId(Long priortiyId) {
         this.priorityId = priortiyId;
     }
 
-    public Integer getTypeId() {
+    public Long getTypeId() {
         return typeId;
     }
 
-    public void setTypeId(Integer typeId) {
+    public void setTypeId(Long typeId) {
         this.typeId = typeId;
     }
 

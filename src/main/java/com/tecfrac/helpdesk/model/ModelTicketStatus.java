@@ -20,21 +20,21 @@ public class ModelTicketStatus {
     public static final int NEW = 1;
     public static final int OPEN = 2;
     public static final int PENDING = 3;
-    public static final int SOLVED = 4; 
+    public static final int SOLVED = 4;
     public static final int SUSPENDED = 5;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private Long id;
 
     @Column
     private String status;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
