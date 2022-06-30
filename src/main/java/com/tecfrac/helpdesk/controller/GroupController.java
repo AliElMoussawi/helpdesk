@@ -46,7 +46,7 @@ public class GroupController {
             }
 
         }
-        return new ResponseEntity<>(newGroup, HttpStatus.ALREADY_REPORTED);
+        return new ResponseEntity<>(newGroup, HttpStatus.LOCKED);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "")

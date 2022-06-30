@@ -168,9 +168,15 @@ public class TicketController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/getTicketMessages/{id}/uI:{userId}")//
-    public ResponseEntity<List<ModelTicketMessage>> getTicketMessages(@PathVariable Integer id,@PathVariable Integer userId ) throws Exception {
-        List<ModelTicketMessage> getTicketMessages = ticketService.getTicketMessges(id,userId);
+    public ResponseEntity<List<ModelTicketMessage>> getTicketMessages(@PathVariable Integer id, @PathVariable Integer userId) throws Exception {
+        List<ModelTicketMessage> getTicketMessages = ticketService.getTicketMessges(id, userId);
         return new ResponseEntity<>(getTicketMessages, HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/getLastMessage/{id}/uI:{userId}")//
+    public ResponseEntity<List<Pair<Integer, String>>> getLastMessage(@PathVariable Integer id, @PathVariable Integer userId) throws Exception {
+        List<Pair<Integer, String>> getLastMessages = ticketService.getLastMessages(id, userId);
+        return new ResponseEntity<>(getLastMessages, HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/mergeTicketMessages/{id}")//

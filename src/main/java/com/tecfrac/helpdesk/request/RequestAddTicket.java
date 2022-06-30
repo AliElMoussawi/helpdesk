@@ -56,11 +56,11 @@ public class RequestAddTicket {
         this.assignedGroupId = assignedGroupId;
     }
 
-    public Integer getPriortiyId() {
+    public Integer getPriorityId() {
         return priorityId;
     }
 
-    public void setPriortiyId(Integer priortiyId) {
+    public void setPriorityId(Integer priortiyId) {
         this.priorityId = priortiyId;
     }
 

@@ -10,12 +10,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-/**
- *
- * @author CLICK ONCE
- */
 @Entity
-@Table(name = "tag")
+@Table(name = "tags")
 public class ModelTag {
 
     @Id
