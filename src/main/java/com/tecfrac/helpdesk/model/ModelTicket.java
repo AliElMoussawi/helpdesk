@@ -25,7 +25,7 @@ import javax.persistence.Table;
  * @author CLICK ONCE
  */
 @Entity
-@Table(name = "Ticket")
+@Table(name = "ticket")
 public class ModelTicket {
 
     @Id

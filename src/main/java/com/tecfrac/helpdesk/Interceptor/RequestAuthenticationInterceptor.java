@@ -43,7 +43,7 @@ public class RequestAuthenticationInterceptor implements HandlerInterceptor {
 //        System.out.println("session:" + sessionId);
 //        System.out.println("token:" + httpToken);
 
-        Optional<ModelSession> session = sessionRepository.findById(Integer.parseInt(sessionId));//here i'm looking if there is id of a session in the table 
+        Optional<ModelSession> session = sessionRepository.findById(Long.parseLong(sessionId));//here i'm looking if there is id of a session in the table 
 //        System.out.println("" + sessionId + "," + Integer.parseInt(sessionId) + "if " + session.isPresent());
 
         if (session.isPresent() && session.get().getToken().equals(httpToken)) {//after checking if the the given token is the same of the of the session id 

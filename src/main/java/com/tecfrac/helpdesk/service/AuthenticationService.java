@@ -19,7 +19,6 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Service
@@ -89,7 +88,7 @@ public class AuthenticationService {
         return login.getFirst();
     }
 
-    public ModelSession signOut(int sessionId, BeanSession beanSession) throws HelpDeskException {
+    public ModelSession signOut(long sessionId, BeanSession beanSession) throws HelpDeskException {
         Optional<ModelSession> session = sessionRepository.findById(sessionId);
         if (session.isEmpty()) {
             throw new HelpDeskException(HttpStatus.BAD_REQUEST, "Bad Request");
@@ -100,41 +99,5 @@ public class AuthenticationService {
         beanSession.setValid(Boolean.FALSE);
         beanSession.setDateExpired(new Date());
         return session.get();
-    }
-
-    public SimpleMailMessage forgetPassword(String email) {
-        ModelUser user = userRepository.findByEmail(email);
-        if (user != null) {
-//            RequestMessageTicket resetEmail = new RequestMessageTicket();
-//            String appUrl = "http://192.168.3.25:8080/auth/resetPassword";
-//            resetEmail.setMessage("To reset your password, click the link below:\n" + appUrl);
-//            resetEmail.setSubject("RESET PASSWORD");
-//            resetEmail.setRequesterId(user.getId());
-//            return emailService.sendMail(resetEmail);
-        }
-        return null;
-    }
-
-    public SimpleMailMessage resetPassword(String email, String newPassword, BeanSession beanSession) throws Exception {
-        ModelUser user = userRepository.findByEmail(email);
-        if (user != null) {
-
-            ModelUserPassword userPassword = userpasswordRepository.findTopByUserIdAndValid(user.getId(), true);
-            RequestChangePassword req = new RequestChangePassword();
-            req.setNewPassword(newPassword);
-            req.setPassword(userPassword.getPassword());
-            req.setUsername(user.getUsername());
-            ModelUser newpass = changePassword(req);
-            if (newpass != null) {
-                RequestMessageTicket resetEmail = new RequestMessageTicket();
-                resetEmail.setMessage("the password successfully changed login again , \n Enjoy your time");
-                resetEmail.setSubject("PASSWORD SUCCESSFULLY CHANGED");
-                resetEmail.setRequesterId(user.getId());
-                resetEmail.setSendfrom(beanSession.getUser().getCompany().getId());
-//                return emailService.sendMail(resetEmail);
-            }
-            return null;
-        }
-        return null;
     }
 }

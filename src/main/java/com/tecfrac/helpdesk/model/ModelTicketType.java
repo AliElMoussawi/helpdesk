@@ -19,10 +19,10 @@ import javax.persistence.Table;
 @Table(name = "user_ticket_Type")
 public class ModelTicketType {
 
-    public static final int Question = 1;
-    public static final int Incident = 2;
-    public static final int Problem = 3;
-    public static final int Task = 4;
+    public static final long Question = 1;
+    public static final long Incident = 2;
+    public static final long Problem = 3;
+    public static final long Task = 4;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;

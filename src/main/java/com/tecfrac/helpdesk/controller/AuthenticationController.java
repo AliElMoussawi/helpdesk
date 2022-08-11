@@ -12,7 +12,6 @@ import com.tecfrac.helpdesk.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -39,7 +38,7 @@ public class AuthenticationController {
     @RequestMapping(method = RequestMethod.POST, value = "/login")
     public ResponseEntity<ModelSession> login(@RequestBody RequestLogin request) throws Exception {
         ModelSession returnObject = authenticationService.login(request, beanSession);
-        return new ResponseEntity<>(returnObject, HttpStatus.OK);
+        return new ResponseEntity<ModelSession>(returnObject, HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/test-web-socket")
@@ -51,10 +50,8 @@ public class AuthenticationController {
 
     @RequestMapping(method = RequestMethod.POST, value = "/changePassword")
     public ResponseEntity<ModelUser> changePassword(@RequestBody RequestChangePassword newPassReq) throws Exception {
-
         ModelUser newUserInfo = authenticationService.changePassword(newPassReq);
-
-        return new ResponseEntity<>(newUserInfo, HttpStatus.OK);
+        return new ResponseEntity<ModelUser>(newUserInfo, HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/signOut")
@@ -66,21 +63,11 @@ public class AuthenticationController {
 
     @RequestMapping(method = RequestMethod.POST, value = "/forgot")
     public ResponseEntity<String> processForgotPasswordForm(@RequestParam String email) {
-        SimpleMailMessage sendEmail = authenticationService.forgetPassword(email);
-        if (sendEmail != null) {
-            return new ResponseEntity<>("successMessage A password reset link has been sent to this : " + email, HttpStatus.OK);
-        }
         return new ResponseEntity<>("this email :" + email + " doesn't exist ", HttpStatus.BAD_REQUEST);
     }
 
     @RequestMapping(value = "/resetPassword", method = RequestMethod.POST)
     public ResponseEntity<String> setNewPassword(@RequestParam String email, @RequestBody RequestChangePassword request) throws Exception {
-        SimpleMailMessage user = authenticationService.resetPassword(email, request.getNewPassword(), beanSession);
-        if (user != null) {
-
-            return new ResponseEntity<>("successMessage You have successfully reset your password.  You may now login.", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("this email :" + email + " doesn't exist ", HttpStatus.BAD_REQUEST);
-        }
+        return new ResponseEntity<>("this email :" + email + " doesn't exist ", HttpStatus.BAD_REQUEST);
     }
 }

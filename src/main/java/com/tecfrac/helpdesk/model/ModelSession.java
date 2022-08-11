@@ -21,7 +21,7 @@ public class ModelSession {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn
@@ -36,7 +36,7 @@ public class ModelSession {
     @Column(name = "date_expired")
     private Date dateExpired;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
     @Column(name = "valid")
@@ -51,7 +51,7 @@ public class ModelSession {
         return valid;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

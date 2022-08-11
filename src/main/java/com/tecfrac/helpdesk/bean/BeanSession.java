@@ -16,7 +16,7 @@ import org.springframework.web.context.WebApplicationContext;
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class BeanSession {
 
-    private Integer id;
+    private Long id;
 
     private ModelUser user;
 
@@ -28,11 +28,11 @@ public class BeanSession {
 
     private Boolean valid;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

@@ -61,8 +61,8 @@ public class TicketService1 {
     private UserGroupRepository userGroupRepository;
     @Autowired
     private TicketMessageRepository ticketMessageRepository;
-    int[] listOfStatus = {ModelTicketStatus.CLOSED, ModelTicketStatus.NEW, ModelTicketStatus.OPEN, ModelTicketStatus.PENDING, ModelTicketStatus.SOLVED, ModelTicketStatus.SUSPENDED};
-    List<Integer> status = Arrays.stream(listOfStatus) // IntStream
+    long[] listOfStatus = {ModelTicketStatus.CLOSED, ModelTicketStatus.NEW, ModelTicketStatus.OPEN, ModelTicketStatus.PENDING, ModelTicketStatus.SOLVED, ModelTicketStatus.SUSPENDED};
+    List<Long> status = Arrays.stream(listOfStatus) // IntStream
             .boxed() // Stream<Integer>
             .collect(Collectors.toList());
 
@@ -176,13 +176,13 @@ public class TicketService1 {
                 ticket.setPriority(ticketPriority.get());
             }
             if (request.getStatusId() != null) {
-                status = ticketStatusRepository.findById(request.getStatusId()).orElse(ticketStatusRepository.findById(ModelTicketStatus.OPEN));
+                status = ticketStatusRepository.findById(request.getStatusId()).orElse(ticketStatusRepository.findById(ModelTicketStatus.OPEN).get());
             }
         }
         if (ticket == null) {
             ticket = new ModelTicket();
             ticket.setRequested(new Date());
-            status = ticketStatusRepository.findById(ModelTicketStatus.NEW);
+            status = ticketStatusRepository.findById(ModelTicketStatus.NEW).get();
         }
         if (ticket.getSubject() == null || request.getSubject() != null) {
             ticket.setSubject(request.getSubject());
@@ -199,7 +199,7 @@ public class TicketService1 {
 
             ticket.setStatus(status);
         } else {
-            ticket.setStatus(ticketStatusRepository.findById(ModelTicketStatus.OPEN));
+            ticket.setStatus(ticketStatusRepository.findById(ModelTicketStatus.OPEN).get());
         }
         ModelGroup group = ticket.getAssignedGroup();
         if (request.getAssignedGroupId() != null) {
@@ -217,13 +217,12 @@ public class TicketService1 {
         if (request.getTypeId() != null) {
             ticket.setTicketType(ticketTypeRepository.findById(request.getTypeId()).get());
         } else {
-            ticket.setTicketType(ticketTypeRepository.findById((ModelTicketType.Problem)));
-
+            ticket.setTicketType(ticketTypeRepository.findById(ModelTicketType.Problem).get());
         }
         if (request.getPriorityId() != null) {
             ticket.setPriority(ticketPriorityRepository.findById(request.getPriorityId()).get());
         } else {
-            ticket.setPriority(ticketPriorityRepository.findById(ModelTicketPriority.Normal));
+            ticket.setPriority(ticketPriorityRepository.findById(ModelTicketPriority.Normal).get());
         }
         ModelTicketMessage message = null;
         if (request.getMessage() != null) {
@@ -253,14 +252,13 @@ public class TicketService1 {
         return ticketRepository.findAllByStatusIdNotInAndAssignedGroupInAndAssignedUser(Arrays.asList(ModelTicketStatus.SOLVED, ModelTicketStatus.CLOSED, ModelTicketStatus.SUSPENDED), getUserGroupsId(user), null);
     }
 
-    public List<ModelTicket> recTickets(List<Integer> list) {
-
+    public List<ModelTicket> recTickets(List<Long> list) {
         return ticketRepository.findAllByStatusIdNotInAndUpdatedGreaterThanEqual(list, recentlyUpdated());
     }
 
     public int countRecUpdated() {
-        int[] listOfStatus = {ModelTicketStatus.CLOSED, ModelTicketStatus.SOLVED, ModelTicketStatus.SUSPENDED};
-        List<Integer> status = Arrays.stream(listOfStatus).boxed().collect(Collectors.toList());
+        long[] listOfStatus = {ModelTicketStatus.CLOSED, ModelTicketStatus.SOLVED, ModelTicketStatus.SUSPENDED};
+        List<Long> status = Arrays.stream(listOfStatus).boxed().collect(Collectors.toList());
         return recTickets(status).size();
     }
 
@@ -289,18 +287,18 @@ public class TicketService1 {
 //    }
     public List<ModelTicket> allTicketsByStatusId1(Long id, ModelUser user) {
         if (id == 1) {
-            int[] listOfStatus = {ModelTicketStatus.SOLVED, ModelTicketStatus.CLOSED, ModelTicketStatus.SUSPENDED
+            long[] listOfStatus = {ModelTicketStatus.SOLVED, ModelTicketStatus.CLOSED, ModelTicketStatus.SUSPENDED
             };
             return ticketRepository.findAllByStatusIdNotInAndAssignedGroupInAndAssignedUser(Arrays.stream(listOfStatus).boxed().collect(Collectors.toList()), getUserGroupsId(user), user);
         } else if (id == 2) {
-            int[] listOfStatus = {ModelTicketStatus.SOLVED, ModelTicketStatus.CLOSED, ModelTicketStatus.SUSPENDED
+            long[] listOfStatus = {ModelTicketStatus.SOLVED, ModelTicketStatus.CLOSED, ModelTicketStatus.SUSPENDED
             };
             return ticketRepository.findAllByStatusIdNotInAndAssignedGroupInAndAssignedUser(Arrays.stream(listOfStatus).boxed().collect(Collectors.toList()), getUserGroupsId(user), null);
         } else if (id == 3) {
-            int[] listOfStatus = {ModelTicketStatus.SOLVED, ModelTicketStatus.CLOSED, ModelTicketStatus.SUSPENDED};
+            long[] listOfStatus = {ModelTicketStatus.SOLVED, ModelTicketStatus.CLOSED, ModelTicketStatus.SUSPENDED};
             return ticketRepository.findAllByStatusIdNotInAndAssignedGroupIn(Arrays.stream(listOfStatus).boxed().collect(Collectors.toList()), getUserGroupsId(user));
         } else if (id == 4) {
-            int[] listOfStatus = {ModelTicketStatus.CLOSED, ModelTicketStatus.SOLVED, ModelTicketStatus.SUSPENDED};
+            long[] listOfStatus = {ModelTicketStatus.CLOSED, ModelTicketStatus.SOLVED, ModelTicketStatus.SUSPENDED};
             status = Arrays.stream(listOfStatus) // IntStream
                     .boxed() // Stream<Integer>
                     .collect(Collectors.toList());
@@ -312,8 +310,8 @@ public class TicketService1 {
             return ticketRepository.findAllByAssignedGroupInAndStatusId(getUserGroupsId(user), ModelTicketStatus.PENDING);
 
         } else if (id == 7) {
-            int[] b = {ModelTicketStatus.NEW, ModelTicketStatus.CLOSED, ModelTicketStatus.OPEN, ModelTicketStatus.PENDING, ModelTicketStatus.SUSPENDED};
-            List<Integer> status = Arrays.stream(listOfStatus) // IntStream
+            long[] b = {ModelTicketStatus.NEW, ModelTicketStatus.CLOSED, ModelTicketStatus.OPEN, ModelTicketStatus.PENDING, ModelTicketStatus.SUSPENDED};
+            List<Long> status = Arrays.stream(listOfStatus) // IntStream
                     .boxed() // Stream<Integer>
                     .collect(Collectors.toList());
             return ticketRepository.findAllByStatusIdNotInAndUpdatedGreaterThanEqual(status, recentlyUpdated());
@@ -333,7 +331,7 @@ public class TicketService1 {
 
     public ModelTicket deleteTicket(Long ticketId, ModelUser user) {
         Optional<ModelTicket> ticket = ticketRepository.findById(ticketId);
-        ticket.get().setStatus(ticketStatusRepository.findById(ModelTicketStatus.CLOSED));
+        ticket.get().setStatus(ticketStatusRepository.findById(ModelTicketStatus.CLOSED).get());
         ticket.get().setUpdated(new Date());
         ticket.get().setDeletedBy(user);
         ticketRepository.save(ticket.get());
@@ -341,7 +339,7 @@ public class TicketService1 {
     }
 
     public ModelTicket undeleteTicket(ModelTicket ticket) {
-        ticket.setStatus(ticketStatusRepository.findById(ModelTicketStatus.OPEN));
+        ticket.setStatus(ticketStatusRepository.findById(ModelTicketStatus.OPEN).get());
         ticket.setDeletedBy(null);
         ticketRepository.save(ticket);
         ModelUser user = ticket.getRequester();

@@ -40,7 +40,6 @@ public class DeskComponentServiceImpl implements DeskComponentService {
 
     @Override
     @Transactional
-
     public UserBean getValueByJID(String userJid) {
         ModelUser result = userRepository.findByUsername(userJid);
         if (result == null) {
@@ -93,7 +92,7 @@ public class DeskComponentServiceImpl implements DeskComponentService {
             return new Failure<TicketBean>("ticket.not_found");
         }
         ticket.get().setValid(true);
-        ticket.get().setStatus(ticketStatusRepository.findById(ModelTicketStatus.OPEN));
+        ticket.get().setStatus(ticketStatusRepository.findById(ModelTicketStatus.OPEN).get());
         ticketRepository.save(ticket.get());
         return new Success<TicketBean>(TicketBean.fromModel(ticket.get()));
     }

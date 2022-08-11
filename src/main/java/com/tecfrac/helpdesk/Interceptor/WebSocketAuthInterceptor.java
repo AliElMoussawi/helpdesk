@@ -33,7 +33,7 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
 //        System.out.print("message :" + message);
         if (StompCommand.CONNECT == accessor.getCommand()) {
             final String sessionId = accessor.getFirstNativeHeader("sessionId");
-            Optional<ModelSession> session = sessionRepository.findById(Integer.parseInt(sessionId));//here i'm looking if there is id of a session in the table 
+            Optional<ModelSession> session = sessionRepository.findById(Long.parseLong(sessionId));//here i'm looking if there is id of a session in the table 
             UsernamePasswordAuthenticationToken user = new UsernamePasswordAuthenticationToken(session.get().getUser().getUsername(), session.get().getToken());
             accessor.setUser(user);
             

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <plugin>
-   <class>com.tecfrac.helpdesk.openfire.DeskPlugin</class>
+   <class>com.tecfrac.helpdesk.DeskPlugin</class>
    <name>HelpDesk</name>
    <description>Help Me</description>
    <author>Ali Moussawi And Mohamad el cheikhali</author>

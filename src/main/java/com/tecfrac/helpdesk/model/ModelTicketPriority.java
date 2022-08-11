@@ -20,22 +20,22 @@ import javax.persistence.Table;
 
 public class ModelTicketPriority {
 
-    public static final int Low = 1;
-    public static final int Normal = 2;
-    public static final int High = 3;
-    public static final int Urgent = 4;
+    public static final long Low = 1;
+    public static final long Normal = 2;
+    public static final long High = 3;
+    public static final long Urgent = 4;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private long id;
 
     @Column
     private String name;
 
-    public Integer getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(long id) {
         this.id = id;
     }
 

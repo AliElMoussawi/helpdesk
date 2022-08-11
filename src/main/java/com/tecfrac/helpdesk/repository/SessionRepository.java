@@ -15,11 +15,14 @@ import org.springframework.stereotype.Repository;
  * @author CLICK ONCE
  */
 @Repository
-public interface SessionRepository extends JpaRepository<ModelSession, Integer> {
-       Optional<ModelSession> findByTokenAndValid(String Token,Boolean Valid);
-    
+public interface SessionRepository extends JpaRepository<ModelSession, Long> {
+
+    Optional<ModelSession> findByTokenAndValid(String Token, Boolean Valid);
+
     List<ModelSession> findAllByUserId(long userId);
-    ModelSession findByUserIdAndValid(long UserId,Boolean Valid);
+
+    ModelSession findByUserIdAndValid(long UserId, Boolean Valid);
+
     List<ModelSession> findAllByUserIdAndValid(long UserId, Boolean Valid);
 
 }

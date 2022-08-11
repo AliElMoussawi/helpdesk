@@ -10,7 +10,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TagRepository extends JpaRepository<ModelTag,Integer>{
-  ModelTag findById(long id);
+public interface TagRepository extends JpaRepository<ModelTag,Long>{
   ModelTag findByTag(String tag);
 }

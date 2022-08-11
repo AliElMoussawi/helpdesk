@@ -18,13 +18,13 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TicketRepository extends JpaRepository<ModelTicket, Long> {
 
-    public List<ModelTicket> findAllByAssignedGroupInAndStatusId(List<ModelGroup> i, int j);
+    public List<ModelTicket> findAllByAssignedGroupInAndStatusId(List<ModelGroup> i, long j);
 
     public void deleteByAssignedGroupInAndId(List<ModelGroup> groups, Long id);
 
-    public List<ModelTicket> findAllByStatusIdNotInAndUpdatedGreaterThanEqual(List<Integer> asList, Date recentlyUpdated);
+    public List<ModelTicket> findAllByStatusIdNotInAndUpdatedGreaterThanEqual(List<Long> asList, Date recentlyUpdated);
 
-    public List<ModelTicket> findAllByStatusIdNotInAndAssignedGroupId(List<Integer> asList, Long i);
+    public List<ModelTicket> findAllByStatusIdNotInAndAssignedGroupId(List<Long> asList, Long i);
 
     @Query(value = "(select new com.tecfrac.helpdesk.bean.BeanPair<Long, Long>(id ,sum(counter)) as count from (select id,counter from user_ticket_status f union\n"
             + "(SELECT  t.status_id,if(t.status_id=1, sum(if(t.assigned_group_id IN:groupId,1,0)) ,count(*)) FROM helpdesk.ticket t group by t.status_id))\n"
@@ -38,8 +38,8 @@ public interface TicketRepository extends JpaRepository<ModelTicket, Long> {
             + " FROM helpdesk.ticket t where t.status_id not in (0,4,5);", nativeQuery = true)
     public List<Object[]> countAllUnsolvedUnassigned(@Param("userId") Long userId, @Param("groupId") List<ModelGroup> groupId);
 
-    // public List<ModelTicket> findAllByStatusIdNotInAndAssignedUser(List<Integer> asList);
-    public List<ModelTicket> findAllByStatusIdNotInAndAssignedUserAndAssignedGroupId(List<Integer> asList, Object object, Long i);
+    // public List<ModelTicket> findAllByStatusIdNotInAndAssignedUser(List<Long> asList);
+    public List<ModelTicket> findAllByStatusIdNotInAndAssignedUserAndAssignedGroupId(List<Long> asList, Object object, Long i);
 
     @Override
     public void deleteAllInBatch();
@@ -81,18 +81,18 @@ public interface TicketRepository extends JpaRepository<ModelTicket, Long> {
 
     public List<ModelTicket> findAllByAssignedGroupInAndRequesterId(List<ModelGroup> userGroupsId, Long id);
 
-    public List<ModelTicket> findAllByStatusIdNotInAndAssignedUserAndAssignedGroupIn(List<Integer> asList, ModelUser user, List<ModelGroup> userGroupsId);
+    public List<ModelTicket> findAllByStatusIdNotInAndAssignedUserAndAssignedGroupIn(List<Long> asList, ModelUser user, List<ModelGroup> userGroupsId);
 
-    public List<ModelTicket> findAllByStatusIdNotInAndAssignedGroupIn(List<Integer> asList, List<ModelGroup> userGroupsId);
+    public List<ModelTicket> findAllByStatusIdNotInAndAssignedGroupIn(List<Long> asList, List<ModelGroup> userGroupsId);
 
-    public List<ModelTicket> findAllByAssignedGroupAndStatusIdNot(int groupId, int SOLVED);
+    public List<ModelTicket> findAllByAssignedGroupAndStatusIdNot(long groupId, long statusId);
 
-    public List<ModelTicket> findAllByStatusIdNotInAndRequester(List<Integer> statusIds, ModelUser user);
+    public List<ModelTicket> findAllByStatusIdNotInAndRequester(List<Long> statusIds, ModelUser user);
 
-    public List<ModelTicket> findAllByStatusIdNotInAndAssignedGroupInAndUpdatedGreaterThanEqual(List<Integer> notStatus, List<ModelGroup> userGroupsId, Date recentlyUpdated);
+    public List<ModelTicket> findAllByStatusIdNotInAndAssignedGroupInAndUpdatedGreaterThanEqual(List<Long> notStatus, List<ModelGroup> userGroupsId, Date recentlyUpdated);
 
-    public List<ModelTicket> findAllByStatusIdNotInAndAssignedGroupInAndAssignedUser(List<Integer> asList, List<ModelGroup> userGroupsId, ModelUser user);
+    public List<ModelTicket> findAllByStatusIdNotInAndAssignedGroupInAndAssignedUser(List<Long> asList, List<ModelGroup> userGroupsId, ModelUser user);
 
-    public List<ModelTicket> findAllByStatusIdNotInAndAssignedGroupInAndAssignedUserAndUpdatedGreaterThanEqual(List<Integer> notStatus, List<ModelGroup> userGroupsId, ModelUser user, Date recentlyUpdated);
+    public List<ModelTicket> findAllByStatusIdNotInAndAssignedGroupInAndAssignedUserAndUpdatedGreaterThanEqual(List<Long> notStatus, List<ModelGroup> userGroupsId, ModelUser user, Date recentlyUpdated);
 
 }
