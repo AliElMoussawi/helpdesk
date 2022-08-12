@@ -1,6 +1,5 @@
 package com.tecfrac.helpdesk.openfire.component;
 
-import com.tecfrac.helpdesk.DeskPlugin;
 import com.tecfrac.helpdesk.model.ModelUserAction;
 import com.tecfrac.helpdesk.openfire.action.config.Action;
 import com.tecfrac.helpdesk.openfire.action.config.ActionsMapper;
@@ -11,15 +10,11 @@ import com.tecfrac.helpdesk.openfire.internal.reply.Return;
 import com.tecfrac.helpdesk.openfire.service.DeskComponentService;
 import com.tecfrac.helpdesk.openfire.utils.IQUtils;
 import java.util.Objects;
-import java.util.logging.Level;
-import javax.annotation.PostConstruct;
-import org.jivesoftware.openfire.component.InternalComponentManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.xmpp.component.AbstractComponent;
-import org.xmpp.component.ComponentException;
 import org.xmpp.packet.IQ;
 
 @Component
@@ -51,7 +46,7 @@ public class DeskComponent extends AbstractComponent {
 
     @Override
     public void start() {
-        log.info("start component");
+        log.info("start component " + getJID());
     }
 
     @Override
