@@ -41,8 +41,10 @@ public class DeskComponentServiceImpl implements DeskComponentService {
     @Override
     @Transactional
     public UserBean getValueByJID(String userJid) {
-        ModelUser result = userRepository.findByUsername(userJid);
-        if (result == null) {
+        ModelUser result;
+        try {
+            result = userRepository.findByUsername(userJid);
+        } catch (Exception e) {
             return null;
         }
         return UserBean.fromModel(result);
@@ -51,11 +53,14 @@ public class DeskComponentServiceImpl implements DeskComponentService {
     @Override
     @Transactional
     public TicketBean getValueById(Long ticketId) {
-        Optional<ModelTicket> result = ticketRepository.findById(ticketId);
-        if (result == null) {
+        ModelTicket result;
+        try {
+            result = ticketRepository.findById(ticketId).get();
+        } catch (Exception e) {
             return null;
         }
-        return TicketBean.fromModel(result.get());
+        return TicketBean.fromModel(result
+        );
 
     }
 
@@ -66,6 +71,7 @@ public class DeskComponentServiceImpl implements DeskComponentService {
 
         log.info("create ticket");
         ModelTicket ticket = new ModelTicket();
+        System.out.println("creating ticket");
         ticketRepository.save(ticket);
         return new Success<>(TicketBean.fromModel(ticket));
     }
@@ -77,9 +83,9 @@ public class DeskComponentServiceImpl implements DeskComponentService {
 
         ModelUserAction userAction = userActionRepository.findByUserTypeIdAndActionId(userType, action.getId());
         if (userAction == null) {
-            return new Failure<ModelUserAction>("unauthorized");
+            return new Failure<>("unauthorized");
         }
-        return new Success<ModelUserAction>(userAction);
+        return new Success<>(userAction);
 
     }
 
@@ -89,12 +95,12 @@ public class DeskComponentServiceImpl implements DeskComponentService {
         log.info("re-open ticket");
         Optional<ModelTicket> ticket = ticketRepository.findById(ticketId);
         if (ticket == null) {
-            return new Failure<TicketBean>("ticket.not_found");
+            return new Failure<>("ticket.not_found");
         }
         ticket.get().setValid(true);
         ticket.get().setStatus(ticketStatusRepository.findById(ModelTicketStatus.OPEN).get());
         ticketRepository.save(ticket.get());
-        return new Success<TicketBean>(TicketBean.fromModel(ticket.get()));
+        return new Success<>(TicketBean.fromModel(ticket.get()));
     }
 
 }

@@ -15,14 +15,16 @@ public class IQUtils {
     public static RequestInfo getRequestInfo(IQ iq) {
         log.info("create request info");
         Long ticketId = Long.parseLong(iq.getChildElement().attributeValue("ticket-id"));
+        System.out.println("ticketId:" + ticketId);
         String userJID = iq.getFrom().getNode();
+        System.out.println("userJID:" + userJID);
         RequestInfo requestInfo = new RequestInfo();
-        Element content = iq.getExtension("content", DeskComponent.NAMESPACE).getElement();
-        String body = content.element("body").getText();
+//        Element content = iq.getExtension("message", DeskComponent.NAMESPACE).getElement();
+//        String body = content.element("body").getText();
         requestInfo.setUserJID(userJID);
-        requestInfo.setBody(body);
+//        requestInfo.setBody(body);
         requestInfo.setTicketId(ticketId);
-        requestInfo.setAction(iq.getExtension("action", DeskComponent.NAMESPACE).getElement().getTextTrim());
+        requestInfo.setAction(iq.getChildElement().attributeValue("action"));
         return requestInfo;
     }
 

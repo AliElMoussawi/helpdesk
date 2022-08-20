@@ -22,7 +22,8 @@ public class RequestHeaderInterceptorAppConfig extends WebMvcConfigurerAdapter {
 
         registry.addInterceptor(requestHeaderInterceptor).excludePathPatterns("/auth/login")
                 .excludePathPatterns("/auth/test-web-socket")
-                .excludePathPatterns("/error");//.excludePathPatterns("/user/**").excludePathPatterns("/ticket/**");
+                .excludePathPatterns("/error");
+        //.excludePathPatterns("/user/**").excludePathPatterns("/ticket/**");
         // registry.addInterceptor(requestHeaderInterceptor).excludePathPatterns("/user/addUser/**");
     }
 

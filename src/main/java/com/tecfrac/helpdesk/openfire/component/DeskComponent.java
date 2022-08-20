@@ -1,5 +1,6 @@
 package com.tecfrac.helpdesk.openfire.component;
 
+import com.tecfrac.helpdesk.controller.AuthenticationController;
 import com.tecfrac.helpdesk.model.ModelUserAction;
 import com.tecfrac.helpdesk.openfire.action.config.Action;
 import com.tecfrac.helpdesk.openfire.action.config.ActionsMapper;
@@ -9,6 +10,7 @@ import com.tecfrac.helpdesk.openfire.beans.UserBean;
 import com.tecfrac.helpdesk.openfire.internal.reply.Return;
 import com.tecfrac.helpdesk.openfire.service.DeskComponentService;
 import com.tecfrac.helpdesk.openfire.utils.IQUtils;
+import com.tecfrac.helpdesk.request.RequestLogin;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +24,8 @@ public class DeskComponent extends AbstractComponent {
 
     private static final Logger log = LoggerFactory.getLogger(DeskComponent.class);
     public static final String NAMESPACE = "urn:xmpp:desk";
-
+    @Autowired
+    AuthenticationController authenticationController;
     @Autowired
     ActionsMapper actionsMapper;
 
@@ -51,11 +54,13 @@ public class DeskComponent extends AbstractComponent {
 
     @Override
     protected IQ handleIQSet(IQ iq) throws Exception {
-        System.out.print("IQ :" + iq);
         log.info("IQ :" + iq);
         RequestInfo requestInfo = IQUtils.getRequestInfo(iq);
         log.info("RequestInfo : " + requestInfo);
+        System.out.print("action :" + requestInfo.getAction());
         TicketBean ticket = deskComponentService.getValueById(requestInfo.getTicketId());
+        System.out.print("ticket :" + ticket);
+
         String action = requestInfo.getAction();
         if (!Objects.equals(ActionsMapper.CREATE_TICKET, action) && ticket == null) {
             return IQUtils.failureResponse(iq, "error");
@@ -70,22 +75,26 @@ public class DeskComponent extends AbstractComponent {
             log.info("user is blocked");
             return IQUtils.failureResponse(iq, "create_ticket.user_is_blocked");
         }
-
-        Return<ModelUserAction> hasAction = deskComponentService.UserHasAction(user.getUserType().getId(), action);
+        RequestLogin request = new RequestLogin();
+        request.setUsername(requestInfo.getUserJID());
+        request.setPassword("test");
+        authenticationController.login(request);
+        Return<TicketBean> hasAction = deskComponentService.createTicket(); //deskComponentService.UserHasAction(user.getUserType().getId(), action);
         if (!hasAction.isSuccessfull()) {
             return IQUtils.failureResponse(iq, hasAction.getError());
         }
 
-        Action actionHandler = actionsMapper.getActionHandler(action);
-
-        if (actionHandler == null) {
-            return IQUtils.failureResponse(iq, "action_not_supported");
-        }
-        Return<TicketBean> result = actionHandler.doAction(ticket, requestInfo);
-        if (!result.isSuccessfull()) {
-            return IQUtils.failureResponse(iq, result.getError());
-        }
-        IQ response = IQUtils.successResponse(iq, ticket.getId().toString(), actionHandler.toString() + " success");
+//        Action actionHandler = actionsMapper.getActionHandler(action);
+//
+//        if (actionHandler == null) {
+//            return IQUtils.failureResponse(iq, "action_not_supported");
+//        }
+//        Return<TicketBean> result = actionHandler.doAction(ticket, requestInfo);
+//        System.out.println("result : " + result.getBean());
+//        if (!result.isSuccessfull()) {
+//            return IQUtils.failureResponse(iq, result.getError());
+//        }
+        IQ response = IQUtils.successResponse(iq, ticket.getId().toString(), "success"); //actionHandler.toString() + " success");
         return response;
     }
 }

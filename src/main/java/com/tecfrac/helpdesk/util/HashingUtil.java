@@ -42,4 +42,8 @@ public class HashingUtil {
         return hexString.toString();
     }
 
+    public static void main(String args[]) {
+        String test = hashString("test");
+        System.out.println("test:" + test);
+    }
 }

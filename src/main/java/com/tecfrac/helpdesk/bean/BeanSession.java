@@ -13,7 +13,8 @@ import org.springframework.web.context.WebApplicationContext;
  * @author CLICK ONCE
  */
 @Component
-@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
+@Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
+
 public class BeanSession {
 
     private Long id;
