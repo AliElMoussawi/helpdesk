@@ -29,7 +29,7 @@ public class RequestAuthenticationInterceptor implements HandlerInterceptor {
     SessionRepository sessionRepository;
 
     @Autowired
-    BeanSession beanSession;//we create here the BeanSession which will became the singelton thus when i autowired it the code will be connected to that fucntion
+    BeanSession beanSession;//we create the BeanSession which will became the singelton thus when i autowired it, the code will be connected to that fucntion
     // and the data will stay inserted in that class thus i can use that data from any class that is autowired it 
 
     @Override//This is used to perform operations before sending the request to the controller. This method should return true to return the response to the clients
@@ -37,8 +37,7 @@ public class RequestAuthenticationInterceptor implements HandlerInterceptor {
         //HttpServletRequest httpRequest = (HttpServletRequest) request;
         System.out.println("com.tecfrac.helpdesk.Interceptor.RequestHeaderInterceptor.preHandle() " + request.getRequestURI());
         System.out.println(request.getHeaderNames());
-        String httpToken = request.getHeader("token");//here i askeed for user to insert data in the header of the request you can checkthe postmon and you will get the \
-        // result 
+        String httpToken = request.getHeader("token");//here i asked user to insert data in the header of the request you can checkthe postmon and you will get the result 
         String sessionId = request.getHeader("sessionId");// same as above
         if (sessionId == null || httpToken == null
                 || sessionId.equals("null")) {
